@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "262600683425",
+    "project_id": "heshe-chat",
+    "storage_bucket": "heshe-chat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262600683425:android:e253abf286d0aed54525e0",
+        "android_client_info": {
+          "package_name": "com.circle.chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "262600683425-eh8ukfged81d1tag1chm3e9qd94vge02.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.circle.chat",
+            "certificate_hash": "07ba49fef9681f9890b0ff7b37d43c8c4d01bc9d"
+          }
+        },
+        {
+          "client_id": "262600683425-ehm2ch6dpdgv2qvkk8ilf8am4lupgikl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEIIfc5v_paqVAqCpCImT6YoRhMnfHYMA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "262600683425-ehm2ch6dpdgv2qvkk8ilf8am4lupgikl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
