@@ -1,18 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:indeterminate="true"
+        android:elevation="10dp"
+        android:padding="5dp"
+        android:background="@drawable/circle_white_bg" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <RelativeLayout
+        android:id="@+id/category_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="14dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        >
+
+        <ImageButton
+            android:id="@+id/arrow_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrow_right"
+            android:layout_centerVertical="true"
+            android:background="@null"/>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/profile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:elevation="1dp"
+            android:layout_marginVertical="5dp"
+            android:layout_toEndOf="@+id/arrow_back"
+            android:scaleType="centerCrop"
+            android:layout_marginLeft="10dp"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CircleImageView"
+            android:src="@drawable/camera_user_profile" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@+id/profile"
+            android:fontFamily="@font/lato_bold"
+            android:layout_alignTop="@+id/profile"
+            android:layout_marginTop="5dp"
+            android:lineSpacingExtra="1sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Test Name"
+            android:textAppearance="@style/toolbar_title"
+            android:textColor="@null"
+            android:textSize="@null"
+            android:layout_marginEnd="20dp"
+            android:translationY="-0.28sp" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Online"
+            android:layout_below="@id/name"
+            android:layout_alignStart="@id/name"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/purple_700"
+            tools:visibility="visible"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/blockBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:background="@null"
+            android:layout_centerVertical="true"
+            android:text="Block"
+            android:padding="5dp"
+            android:textColor="@color/red"
+            android:fontFamily="@font/lato_bold"/>
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/view4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="20dp"
+        android:background="@color/fade_color"
+        android:layout_below="@id/category_toolbar"/>
+
+    <RelativeLayout
+        android:id="@+id/relative_msgbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/chat_message_box"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toStartOf="@+id/cv_sendbtn"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/messageBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="Type a message..."
+                android:textColorHint="@color/hint_color"
+                android:imeOptions="actionSend"
+                android:inputType="text"
+                android:padding="8dp"
+                android:textSize="14sp" />
+
+<!--
+            <ImageView
+                android:id="@+id/attachment"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginRight="12dp"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_attachment" />
+-->
+
+            <ImageView
+                android:id="@+id/camera"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginRight="12dp"
+                app:srcCompat="@drawable/ic_camera" />
+        </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_sendbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:elevation="0dp"
+            android:layout_marginBottom="5dp"
+            android:layout_alignParentEnd="true"
+            app:cardBackgroundColor="@color/purple_700"
+            app:cardCornerRadius="10dp">
+
+            <TextView
+                android:id="@+id/sendBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Search"
+                android:paddingHorizontal="20dp"
+                android:textColor="@color/white"
+                />
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        android:layout_marginHorizontal="10dp"
+        android:layout_below="@+id/view4"
+        android:layout_above="@+id/relative_msgbox"
+        android:layout_marginTop="10dp"
+        tools:itemCount="20"
+        tools:listitem="@layout/item_sent_1"
+        />
+
+
+</RelativeLayout>

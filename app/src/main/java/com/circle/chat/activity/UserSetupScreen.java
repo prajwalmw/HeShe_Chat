@@ -106,6 +106,19 @@ public class UserSetupScreen extends AppCompatActivity {
 
                                         User user = new User(uid, name, phone, imageUrl);
                                         sessionManager.setUserModel(user, "loggedIn_UserModel");
+                                        database.getReference()
+                                                .child("users")
+                                                .child(uid)
+                                                .setValue(user)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        dialog.dismiss();
+                                                        Intent intent = new Intent(UserSetupScreen.this, MainActivity.class);
+                                                        startActivity(intent);
+                                                        finish();
+                                                    }
+                                                });
 
                                         Intent intent = new Intent(UserSetupScreen.this, MainActivity.class);
                                         startActivity(intent);
@@ -124,7 +137,6 @@ public class UserSetupScreen extends AppCompatActivity {
                     sessionManager.setUserModel(user, "loggedIn_UserModel");
                     if (sessionManager.getLoggedInUsername().equalsIgnoreCase(""))
                         sessionManager.setLoggedInUsername(name);   // Adding username who logged-in into the session manager.
-
 
                             database.getReference()
                                     .child("users")
