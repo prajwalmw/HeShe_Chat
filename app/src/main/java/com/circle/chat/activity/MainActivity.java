@@ -219,16 +219,15 @@ public class MainActivity extends AppCompatActivity {
         binding.cvSendbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (binding.sendBtn.getText().toString().equalsIgnoreCase("Search")) {
-                    binding.sendBtn.setText("Really?");
+                if (binding.newBtn.getText().toString().equalsIgnoreCase("New")) {
+                    binding.newBtn.setText("Really?");
                     binding.cvSendbtn.setCardBackgroundColor(getResources().getColor(R.color.theme_dark_red_sports));
                     return;
                 }
 
-                if (binding.sendBtn.getText().toString().equalsIgnoreCase("Really?")) {
+                if (binding.newBtn.getText().toString().equalsIgnoreCase("Really?")) {
                     fetchRandomUser();
                     binding.cvSendbtn.setCardBackgroundColor(getResources().getColor(R.color.purple_700));
-
                 }
 
 
@@ -360,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             fetchMessages();
-            binding.sendBtn.setText("Search");
+            binding.newBtn.setText("New");
         }
     }
 

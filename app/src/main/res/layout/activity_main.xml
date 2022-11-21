@@ -163,16 +163,36 @@
             android:layout_height="44dp"
             android:elevation="0dp"
             android:layout_marginBottom="5dp"
-            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:layout_toStartOf="@id/cv_newbtn"
             app:cardBackgroundColor="@color/purple_700"
             app:cardCornerRadius="10dp">
 
-            <TextView
+            <ImageView
                 android:id="@+id/sendBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/send_btn_svg"/>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_newbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:elevation="0dp"
+            android:layout_marginBottom="5dp"
+            android:layout_alignParentEnd="true"
+            app:cardBackgroundColor="@color/leader_head_color"
+            app:cardCornerRadius="10dp">
+
+            <TextView
+                android:id="@+id/newBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Search"
+                android:text="New"
                 android:paddingHorizontal="20dp"
                 android:textColor="@color/white"
                 />
