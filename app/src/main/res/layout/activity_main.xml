@@ -48,7 +48,7 @@
             android:scaleType="centerCrop"
             android:layout_marginLeft="10dp"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CircleImageView"
-            android:src="@drawable/camera_user_profile" />
+            android:src="@drawable/avatar_icon" />
 
         <TextView
             android:id="@+id/name"
@@ -62,7 +62,7 @@
             android:lineSpacingExtra="1sp"
             android:maxLines="1"
             android:ellipsize="end"
-            android:text="Test Name"
+            android:text="HeShe"
             android:textAppearance="@style/toolbar_title"
             android:textColor="@null"
             android:textSize="@null"
@@ -133,7 +133,6 @@
                 android:background="@android:color/transparent"
                 android:hint="Type a message..."
                 android:textColorHint="@color/hint_color"
-                android:imeOptions="actionSend"
                 android:inputType="text"
                 android:padding="8dp"
                 android:textSize="14sp" />

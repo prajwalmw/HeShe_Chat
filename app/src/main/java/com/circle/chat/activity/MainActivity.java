@@ -170,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
 */
 
 
+/*
         binding.messageBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView message, int actionId, KeyEvent event) {
@@ -178,6 +179,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return false;
             }
+        });
+*/
+        binding.sendBtn.setOnClickListener(v -> {
+            sendChatMessage();
         });
 
 /*
@@ -216,18 +221,18 @@ public class MainActivity extends AppCompatActivity {
             binding.messageBox.setHint("Type a message...");
         }
 
-        binding.cvSendbtn.setOnClickListener(new View.OnClickListener() {
+        binding.cvNewbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (binding.newBtn.getText().toString().equalsIgnoreCase("New")) {
                     binding.newBtn.setText("Really?");
-                    binding.cvSendbtn.setCardBackgroundColor(getResources().getColor(R.color.theme_dark_red_sports));
+                    binding.cvNewbtn.setCardBackgroundColor(getResources().getColor(R.color.theme_dark_red_sports));
                     return;
                 }
 
                 if (binding.newBtn.getText().toString().equalsIgnoreCase("Really?")) {
                     fetchRandomUser();
-                    binding.cvSendbtn.setCardBackgroundColor(getResources().getColor(R.color.purple_700));
+                    binding.cvNewbtn.setCardBackgroundColor(getResources().getColor(R.color.purple_700));
                 }
 
 
@@ -364,6 +369,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendChatMessage() {
+        try {
+            InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
         String messageTxt = binding.messageBox.getText().toString();
 
         if(messageTxt.trim().equalsIgnoreCase("")) {
