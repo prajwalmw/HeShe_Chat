@@ -71,7 +71,7 @@
             android:translationY="-0.28sp" />
 
         <TextView
-            android:id="@+id/status"
+            android:id="@+id/onlinetxtview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Online"

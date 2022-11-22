@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     boolean block = false;
     SessionManager sessionManager;
     ArrayList<User> userArrayList = new ArrayList<>();
+    Handler hand;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,21 +120,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-
         // arrow back click
         binding.arrowBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                finish();
-              /*  boolean notification = getIntent().getBooleanExtra("notification", false);
-                if (notification) {
-                    Intent intent = new Intent(MainActivity.this, Chat_UserList.class);
-                    intent.putExtra("category",category_value);
-                    startActivity(intent);
-                }
-                else {
-                    finish();
-                }*/
             }
         });
 
@@ -144,31 +136,6 @@ public class MainActivity extends AppCompatActivity {
         binding.blockBtn.setOnClickListener(v -> {
             blockUser();
         });
-
-/*
-        database.getReference().child("presence").child(receiverUid)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            String status = snapshot.getValue(String.class);
-                            if (!status.isEmpty()) {
-                                if (status.equals("Offline")) {
-                                    binding.status.setVisibility(View.GONE);
-                                } else {
-                                    binding.status.setText(status);
-                                    binding.status.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-*/
 
 
         binding.messageBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -185,42 +152,6 @@ public class MainActivity extends AppCompatActivity {
             sendChatMessage();
         });
 
-/*
-        database.getReference()
-                .child("chats")
-                .child(senderRoom)
-                .child("messages")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        messages.clear();
-                        for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                            Message message = snapshot1.getValue(Message.class);
-                            message.setMessageId(snapshot1.getKey());
-                            message.setTimestamp(message.getTimestamp());
-                            messages.add(message);
-                        }
-
-                        scrollToLatestItem(); // scroll recyclerview to latest item
-                        adapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
-*/
-
-      /*  if (block) {
-            binding.messageBox.setEnabled(false);
-            binding.messageBox.setHint("You have blocked this user");
-        }
-        else {
-            binding.messageBox.setEnabled(true);
-            binding.messageBox.setHint("Type a message...");
-        }
-*/
         binding.messageBox.setEnabled(true);
         binding.messageBox.setHint("Type a message...");
 
@@ -240,16 +171,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-            }
-        });
-
-        binding.camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                startActivityForResult(intent, 25);
             }
         });
 
@@ -287,6 +208,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void deleteCurrentChatWithUser() {
+        hand.removeCallbacksAndMessages(null);
+
         senderRoom = senderUid + receiverUid;
         receiverRoom = receiverUid + senderUid;
 
@@ -362,8 +285,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-
-
     }
 
     private void fetchRandomUser() {
@@ -371,7 +292,8 @@ public class MainActivity extends AppCompatActivity {
         if (userArrayList.size() > 0) {
             binding.progress.setVisibility(View.VISIBLE);
             Random random = new Random();
-            int index = ThreadLocalRandom.current().nextInt(0, userArrayList.size());
+           // int index = ThreadLocalRandom.current().nextInt(0, userArrayList.size());
+            int index = random.nextInt(userArrayList.size());
             User user = userArrayList.get(index);
             name = user.getName();
             profile = user.getProfileImage();
@@ -379,16 +301,105 @@ public class MainActivity extends AppCompatActivity {
             receiverUid = user.getUid(); // this id will be of the one to whom you are sending the msg.
             block = user.isIsblocked();
 
+            // Receiver is sendig message 'Hi'
+            receiverSendingMessage();
+
             binding.name.setText(name);
             Glide.with(MainActivity.this).load(profile)
                     .placeholder(R.drawable.avatar_icon)
                     .into(binding.profile);
 
-
-
             fetchMessages();
             binding.newBtn.setText("New");
         }
+    }
+
+    /**
+     * Receiver sending Hi message for a chat kickstarter...
+     */
+    private void receiverSendingMessage() {
+        senderRoom = senderUid + receiverUid;
+        receiverRoom = receiverUid + senderUid;
+
+        Date date = new Date();
+        Runnable userStoppedTyping = new Runnable() {
+            @Override
+            public void run() {
+                database.getReference().child("presence").child(senderUid).setValue("Online");
+                binding.onlinetxtview.setText("Online");
+                // start
+
+                String hi = "Hi";
+                int no = new Random().nextInt(100);
+                if (no > 1 && no < 10)
+                    hi = "Hey";
+                else if (no > 10 && no < 20)
+                    hi = "Hello";
+                else if (no > 20 && no < 30)
+                    hi = "hii";
+                else if (no > 30 && no < 40)
+                    hi = "hey";
+                else if (no > 40 && no < 50)
+                    hi = "Hie";
+                else if (no > 60 && no < 70)
+                    hi = "hello";
+
+                Message message = new Message(hi, receiverUid, date.getTime());
+                String randomKey = database.getReference().push().getKey();
+
+                HashMap<String, Object> lastMsgObj = new HashMap<>();
+                lastMsgObj.put("lastMsg", message.getMessage());
+                lastMsgObj.put("lastMsgTime", date.getTime());
+                lastMsgObj.put("block", false);
+
+                database.getReference()
+                        .child("chats")
+                        .child(senderRoom).updateChildren(lastMsgObj); // Updating the values...
+
+                database.getReference()
+                        .child("chats")
+                        .child(receiverRoom).updateChildren(lastMsgObj);
+
+                database.getReference()
+                        .child("chats")
+                        .child(senderRoom)
+                        .child("messages")
+                        .child(randomKey)
+                        .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                database.getReference()
+                                        .child("chats")
+                                        .child(receiverRoom)
+                                        .child("messages")
+                                        .child(randomKey)
+                                        .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                // TODO: Handle later.
+                                                //   sendNotification(name, message.getMessage(), token, profile); // this calls fcm by hitting fcm api.
+                                            }
+                                        });
+                            }
+                        });
+
+                fetchMessages();
+                // end
+            }
+        };
+
+        hand = new Handler(Looper.getMainLooper());
+        hand.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Do something after 100ms
+                database.getReference().child("presence").child(senderUid).setValue("typing...");
+                binding.onlinetxtview.setText("Typing...");
+                hand.removeCallbacksAndMessages(null);
+                hand.postDelayed(userStoppedTyping, 4000);
+            }
+        }, 1000);
+
     }
 
     private void sendChatMessage() {
@@ -449,148 +460,6 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    // todo: handle this block later for heshe
-//    void sendNotification(String name, String message, String token, String profile) {
-//        try {
-//            RequestQueue queue = Volley.newRequestQueue(this);
-//
-//            String url = "https://fcm.googleapis.com/fcm/send";
-//
-//            JSONObject data = new JSONObject(); // here the one who is sending the msg his details must come here.
-//            data.put("name", sender_user.getName()); // user-name
-//            data.put("body", message); // message
-//            data.put("token", sender_user.getToken());
-//            data.put("image", sender_user.getProfileImage());
-//            data.put("uid", sender_user.getUid());
-//            data.put("category", category_value);
-//            data.put("activity", "ChatActivity");
-//
-//            JSONObject notificationData = new JSONObject();
-//            notificationData.put("data", data); // sending value to "data" is very imp to trigger notifi in both fore and background.
-//            notificationData.put("to", token);
-//
-//            JsonObjectRequest request = new JsonObjectRequest(url, notificationData
-//                    , new Response.Listener<JSONObject>() {
-//                @Override
-//                public void onResponse(JSONObject response) {
-//                    //   Toast.makeText(ChatActivity.this, "success", Toast.LENGTH_SHORT).show();
-//                }
-//            }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//                    Log.v("volley", "error: " + error + ". : " + error.networkResponse);
-//                    if(error.getMessage() != null) {
-//                        Toast.makeText(ChatActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-//                    }
-//                    else {
-//                        Toast.makeText(ChatActivity.this, "Error in Volley", Toast.LENGTH_SHORT).show();
-//
-//                    }
-//                }
-//            }) {
-//                @Override
-//                public Map<String, String> getHeaders() throws AuthFailureError {
-//                    /**
-//                     * Firebase - setting- project settings - cloud messaging - cm api (legacy) - three dots - redirect - enable - done - copy and paste here the key.
-//                     */
-//                    HashMap<String, String> map = new HashMap<>();
-//                    String key = "Key=AAAAWWFIPG0:APA91bHPg7uiQHaU3NTX2SZLyRdXYTCdveog5vYECpCdZixulrWo_A6LmojdJ_z88K8DYuqlDapzqwPGVha5Fq-8OCHptSaUI3gRmCO_ILiMEeJ0Z_YZGtvi9v4ookji-OokBgHeo0U1";
-//                    map.put("Content-Type", "application/json");
-//                    map.put("Authorization", key);
-//
-//                    return map;
-//                }
-//            };
-//
-//            queue.add(request);
-//
-//
-//        } catch (Exception ex) {
-//            Log.v("hi", "hii: " + ex);
-//
-//        }
-//
-//
-//    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 25) {
-            if (data != null) {
-                if (data.getData() != null) {
-                    Uri selectedImage = data.getData();
-                    Calendar calendar = Calendar.getInstance();
-                    StorageReference reference = storage.getReference()
-                            .child("chats")
-                            .child(calendar.getTimeInMillis() + "");
-                    dialog.show();
-                    reference.putFile(selectedImage).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                            dialog.dismiss();
-                            if (task.isSuccessful()) {
-                                reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        String filePath = uri.toString();
-
-                                        String messageTxt = binding.messageBox.getText().toString();
-
-                                        Date date = new Date();
-                                        Message message = new Message(messageTxt, senderUid, date.getTime());
-                                        message.setMessage("photo");
-                                        message.setImageUrl(filePath);
-                                        binding.messageBox.setText("");
-
-                                        String randomKey = database.getReference().push().getKey();
-
-                                        HashMap<String, Object> lastMsgObj = new HashMap<>();
-                                        lastMsgObj.put("lastMsg", message.getMessage());
-                                        lastMsgObj.put("lastMsgTime", date.getTime());
-                                        lastMsgObj.put("block", false);
-
-                                        database.getReference()
-                                                .child("chats")
-                                                .child(senderRoom).updateChildren(lastMsgObj);
-                                        database.getReference()
-                                                .child("chats")
-                                                .child(receiverRoom).updateChildren(lastMsgObj);
-
-                                        database.getReference()
-                                                .child("chats")
-                                                .child(senderRoom)
-                                                .child("messages")
-                                                .child(randomKey)
-                                                .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                    @Override
-                                                    public void onSuccess(Void aVoid) {
-                                                        database.getReference()
-                                                                .child("chats")
-                                                                .child(receiverRoom)
-                                                                .child("messages")
-                                                                .child(randomKey)
-                                                                .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                    @Override
-                                                                    public void onSuccess(Void aVoid) {
-
-                                                                    }
-                                                                });
-                                                    }
-                                                });
-
-                                        //Toast.makeText(ChatActivity.this, filePath, Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
-            }
-        }
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -605,33 +474,6 @@ public class MainActivity extends AppCompatActivity {
         database.getReference().child("presence").child(currentId).setValue("Offline");
     }
 
-    /*   @Override
-       public boolean onCreateOptionsMenu(Menu menu) {
-           getMenuInflater().inflate(R.menu.chat_menu, menu);
-           if (block)
-               menu.findItem(R.id.block).setTitle("Unblock");
-           else
-               menu.findItem(R.id.block).setTitle("Block");
-
-           return true;
-       }
-
-       @Override
-       public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-           switch (item.getItemId()) {
-               case R.id.chhat:
-                   connectVideoCall();
-                   return true;
-
-               case R.id.block:
-                   blockUser();
-                   return true;
-
-               default:
-                   return super.onOptionsItemSelected(item);
-           }
-       }
-   */
     private void blockUser() {
         if (messages.size() > 0) {
             HashMap<String, Object> block_key = new HashMap<>();
