@@ -231,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (binding.newBtn.getText().toString().equalsIgnoreCase("Really?")) {
+                    deleteCurrentChatWithUser();
                     fetchRandomUser();
                     binding.cvNewbtn.setCardBackgroundColor(getResources().getColor(R.color.purple_700));
                 }
@@ -276,6 +277,21 @@ public class MainActivity extends AppCompatActivity {
             };
         });
 
+    }
+
+    private void deleteCurrentChatWithUser() {
+        senderRoom = senderUid + receiverUid;
+        receiverRoom = receiverUid + senderUid;
+
+        database.getReference()
+                .child("chats")
+                .child(senderRoom)
+                .removeValue();
+
+        database.getReference()
+                .child("chats")
+                .child(receiverRoom)
+                .removeValue();
     }
 
     private void fetchMessages() {
