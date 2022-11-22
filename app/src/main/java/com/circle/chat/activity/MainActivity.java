@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (binding.newBtn.getText().toString().equalsIgnoreCase("New")) {
                     binding.newBtn.setText("Really?");
-                    binding.cvNewbtn.setCardBackgroundColor(getResources().getColor(R.color.theme_dark_red_sports));
+                    binding.cvNewbtn.setCardBackgroundColor(getResources().getColor(R.color.theme_red_sports));
                     return;
                 }
 
