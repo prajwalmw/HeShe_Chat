@@ -53,6 +53,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
@@ -370,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
         if (userArrayList.size() > 0) {
             binding.progress.setVisibility(View.VISIBLE);
             Random random = new Random();
-            int index = random.nextInt(userArrayList.size());
+            int index = ThreadLocalRandom.current().nextInt(0, userArrayList.size());
             User user = userArrayList.get(index);
             name = user.getName();
             profile = user.getProfileImage();

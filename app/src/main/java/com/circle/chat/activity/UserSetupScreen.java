@@ -31,6 +31,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class UserSetupScreen extends AppCompatActivity {
     ActivityUserSetupScreenBinding binding;
@@ -65,6 +67,9 @@ public class UserSetupScreen extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         auth = FirebaseAuth.getInstance();
 
+        Random random = new Random();
+        int value = ThreadLocalRandom.current().nextInt(100, 1000 + 1);
+        binding.nameBox.setText("HeShe#User" + value);  // setting random username
         binding.imageViewIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
