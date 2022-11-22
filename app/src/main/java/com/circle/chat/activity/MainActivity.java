@@ -170,7 +170,6 @@ public class MainActivity extends AppCompatActivity {
 */
 
 
-/*
         binding.messageBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView message, int actionId, KeyEvent event) {
@@ -180,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-*/
+
         binding.sendBtn.setOnClickListener(v -> {
             sendChatMessage();
         });
@@ -212,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                 });
 */
 
-        if (block) {
+      /*  if (block) {
             binding.messageBox.setEnabled(false);
             binding.messageBox.setHint("You have blocked this user");
         }
@@ -220,6 +219,9 @@ public class MainActivity extends AppCompatActivity {
             binding.messageBox.setEnabled(true);
             binding.messageBox.setHint("Type a message...");
         }
+*/
+        binding.messageBox.setEnabled(true);
+        binding.messageBox.setHint("Type a message...");
 
         binding.cvNewbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -259,6 +261,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!s.toString().equalsIgnoreCase(""))
+                    binding.sendBtn.setVisibility(View.VISIBLE);
+                else
+                    binding.sendBtn.setVisibility(View.GONE);
 
             }
 
@@ -693,5 +699,10 @@ public class MainActivity extends AppCompatActivity {
         }*/
     }
 
-
+    @Override
+    protected void onDestroy() {
+        // So that when app is forced closed so than also the current chat is deleted.
+        super.onDestroy();
+        deleteCurrentChatWithUser();
+    }
 }
