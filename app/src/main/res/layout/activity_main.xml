@@ -108,9 +108,8 @@
         android:id="@+id/relative_msgbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/adView"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="24dp"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp">
 
@@ -203,6 +202,19 @@
         </androidx.cardview.widget.CardView>
 
     </RelativeLayout>
+
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-6656140211699925/6924438405">
+    </com.google.android.gms.ads.AdView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

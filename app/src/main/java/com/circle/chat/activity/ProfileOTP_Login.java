@@ -19,6 +19,9 @@ import com.circle.chat.R;
 import com.circle.chat.model.CategoryModel;
 import com.circle.chat.utilities.SessionManager;
 import com.circle.chat.databinding.ActivityProfileOtpLoginBinding;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -119,11 +122,11 @@ public class ProfileOTP_Login extends AppCompatActivity {
 
         // Ads initialize only once.
         // TODO: Ads uncomment later and setup as well.
-      /*  MobileAds.initialize(this, new OnInitializationCompleteListener() {
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
             public void onInitializationComplete(InitializationStatus initializationStatus) {
             }
-        });*/
+        });
 
         // OTP Login support is added.
         mauth = FirebaseAuth.getInstance();

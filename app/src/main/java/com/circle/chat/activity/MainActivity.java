@@ -33,6 +33,13 @@ import com.circle.chat.databinding.ActivityMainBinding;
 import com.circle.chat.model.Message;
 import com.circle.chat.model.User;
 import com.circle.chat.utilities.SessionManager;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -76,6 +83,9 @@ public class MainActivity extends AppCompatActivity {
     SessionManager sessionManager;
     ArrayList<User> userArrayList = new ArrayList<>();
     Handler hand;
+    private InterstitialAd mInterstitialAd;
+    private AdRequest adRequest;
+    private int counter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +105,20 @@ public class MainActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
+
+        // Admob - Start
+        adRequest = new AdRequest.Builder().build();
+        binding.adView.loadAd(adRequest);
+        binding.adView.setAdListener(new AdListener() {
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
+                binding.adView.loadAd(adRequest);
+            }
+        });
+
+        loadFullScreenAd();
+        // Admob - End
 
         fetchAllUsers();
         binding.progress.setVisibility(View.VISIBLE);
@@ -165,6 +189,15 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (binding.newBtn.getText().toString().equalsIgnoreCase("Really?")) {
+                    counter++;  // incrementing counter here...
+                    if (counter == 10) {
+                        counter = 0;    // resetting counter...
+                    if (mInterstitialAd != null) {
+                        mInterstitialAd.show(MainActivity.this);
+                    } else {
+                        Log.d("TAG", "The interstitial ad wasn't ready yet.");
+                    }}
+
                     deleteCurrentChatWithUser();
                     fetchRandomUser();
                     binding.cvNewbtn.setCardBackgroundColor(getResources().getColor(R.color.purple_700));
@@ -205,6 +238,44 @@ public class MainActivity extends AppCompatActivity {
             };
         });
 
+    }
+
+    public void loadFullScreenAd() {
+        // Fullscreen ads.
+        InterstitialAd.load(this, "ca-app-pub-6656140211699925/3974841438", adRequest,
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        super.onAdFailedToLoad(loadAdError);
+                        mInterstitialAd = null;
+                        loadFullScreenAd();
+                    }
+
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        super.onAdLoaded(interstitialAd);
+                        mInterstitialAd = interstitialAd;
+                        mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                            @Override
+                            public void onAdDismissedFullScreenContent() {
+                                super.onAdDismissedFullScreenContent();
+                             //   mInterstitialAd = null;
+                            }
+
+                            @Override
+                            public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                                super.onAdFailedToShowFullScreenContent(adError);
+                                mInterstitialAd = null;
+                                loadFullScreenAd();
+                            }
+
+                            @Override
+                            public void onAdShowedFullScreenContent() {
+                                super.onAdShowedFullScreenContent();
+                            }
+                        });
+                    }
+                });
     }
 
     private void deleteCurrentChatWithUser() {
