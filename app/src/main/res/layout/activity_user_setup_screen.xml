@@ -113,7 +113,6 @@
         android:layout_below="@+id/subText"
         android:layout_centerHorizontal="true"
         android:hint="Type your name*"
-        android:text="Anonymous"
         android:inputType="textCapWords"
         android:layout_marginHorizontal="30dp"
         android:layout_marginTop="30dp"

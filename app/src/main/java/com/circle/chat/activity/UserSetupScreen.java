@@ -17,9 +17,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.circle.chat.R;
 import com.circle.chat.databinding.ActivityUserSetupScreenBinding;
 import com.circle.chat.model.CategoryModel;
@@ -30,7 +36,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -54,6 +63,8 @@ public class UserSetupScreen extends AppCompatActivity {
     private String category_value;
     private SessionManager sessionManager;
     private List<CategoryModel> categoryList;
+    private MaterialAlertDialogBuilder builder;
+    private AlertDialog alertdialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,21 +88,12 @@ public class UserSetupScreen extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        Random random = new Random();
-        int value = ThreadLocalRandom.current().nextInt(100, 1000 + 1);
-        binding.nameBox.setText("HeShe#User" + value);  // setting random username
+        loadThisUsersPreviousDetailsAndShow();
 
         binding.imageViewIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean granted = checkPermissionsGrantedOrRequest();
-                if (granted) {
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    intent.setType("image/*");
-                    startActivityForResult(intent, 45);
-                }
-            }
+                checkPermissionsGrantedOrRequest();}
         });
 
         binding.continueBtn.setOnClickListener(new View.OnClickListener() {
@@ -177,6 +179,75 @@ public class UserSetupScreen extends AppCompatActivity {
         });
     }
 
+    @NonNull
+    private void generateRandomName() {
+        Random random = new Random();
+        int value = ThreadLocalRandom.current().nextInt(100, 10000 + 1);
+        String name = "HeShe#User" + value;
+
+        // check if name already exists than create new random number.
+        checkNameExists(name);
+    }
+
+    private void checkNameExists(String name) {
+        database.getReference()
+                .child("users")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                            User user = snapshot1.getValue(User.class);
+                            if (user.getName().equalsIgnoreCase(name)) {
+                                generateRandomName();
+                            } else {
+                                binding.nameBox.setText(name);  // setting random username
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
+    private void loadThisUsersPreviousDetailsAndShow() {
+        showDialog(); // shows the loading dialog
+        database.getReference()
+                .child("users")
+                .child(FirebaseAuth.getInstance().getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        dismissDialog();
+                        User user = snapshot.getValue(User.class);
+                        if (user == null) {
+                            if (binding.nameBox.getText().toString().equalsIgnoreCase("")) {
+                                generateRandomName();
+                            }
+                            Toast.makeText(UserSetupScreen.this, "No previous details found. \nWelcome to HEShe Chat!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        String name = user.getName();
+                        Uri uri = Uri.parse(user.getProfileImage());
+
+                        binding.nameBox.setText(name);
+                        if (user.getImage() == null) {
+                            Glide.with(UserSetupScreen.this)
+                                    .load(uri)
+                                    .placeholder(R.drawable.avatar_icon)
+                                    .into(binding.imageViewIcon);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        dismissDialog();
+                    }
+                });
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -231,6 +302,13 @@ public class UserSetupScreen extends AppCompatActivity {
         if (readExternalStoragePermission != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
+        else {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(intent, 45);
+            return true;
+        }
 
         if (!listPermissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray
@@ -256,7 +334,7 @@ public class UserSetupScreen extends AppCompatActivity {
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
                 startActivityForResult(intent, 45);
-                checkPermissionsGrantedOrRequest();
+//                checkPermissionsGrantedOrRequest();
             } else {
                 showPermissionDeniedAlert(permissions);
             }
@@ -289,5 +367,36 @@ public class UserSetupScreen extends AppCompatActivity {
     }
 
     // Permission - End
+
+
+    public void showDialog() {
+        builder = new MaterialAlertDialogBuilder(this);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View view = inflater.inflate(R.layout.dialog_layout, null);
+        TextView title = view.findViewById(R.id.title);
+        TextView description = view.findViewById(R.id.description);
+        ImageView imageView = view.findViewById(R.id.icon);
+
+        title.setText("Fetching details...");
+        description.setText("Please wait while we are fetching your details.");
+        imageView.animate().rotation(3600).setDuration(60000).start();  // icon rotating
+        builder.setView(view)
+//                .setPositiveButton("Ok", /* listener = */ null)
+//                .setNegativeButton("Cancel", /* listener = */ null)
+                .setCancelable(false);
+
+        alertdialog = builder.create();
+        alertdialog.getWindow().setBackgroundDrawableResource(R.drawable.rounded_corner_bg); // show rounded corner for the dialog
+        alertdialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);   // dim backgroun
+        int width = getResources().getDimensionPixelSize(R.dimen.internet_dialog_width);    // set width to your dialog.
+
+        alertdialog.getWindow().setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT);
+        alertdialog.show();
+    }
+
+    public void dismissDialog() {
+        alertdialog.dismiss();
+    }
+
 
 }

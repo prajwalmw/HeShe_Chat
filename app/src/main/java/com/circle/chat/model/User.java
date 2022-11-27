@@ -1,7 +1,7 @@
 package com.circle.chat.model;
 
 public class User {
-    private String uid, name, phoneNumber, profileImage, token;
+    private String uid, name, phoneNumber, profileImage, token, image;
     private boolean isblocked = false;
 
     public User() {
@@ -61,5 +61,13 @@ public class User {
 
     public void setIsblocked(boolean isblocked) {
         this.isblocked = isblocked;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }
