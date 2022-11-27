@@ -265,7 +265,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadFullScreenAd() {
         // Fullscreen ads.
-        InterstitialAd.load(this, "ca-app-pub-6656140211699925/3974841438", adRequest,
+        // TODO: update with production key later.
+        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest,
                 new InterstitialAdLoadCallback() {
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
