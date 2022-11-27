@@ -3,8 +3,13 @@ package com.circle.chat.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -32,8 +38,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
+import com.hbb20.CountryCodePicker;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -49,13 +57,13 @@ public class ProfileOTP_Login extends AppCompatActivity {
     private SessionManager sessionManager;
     private boolean update = false;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityProfileOtpLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+
 
         intent = getIntent();
         if (intent.getExtras() != null) {
@@ -135,9 +143,11 @@ public class ProfileOTP_Login extends AppCompatActivity {
             //  startActivity(new Intent(ProfileOTP_Login.this, UserSetupScreen.class));
         }*/
 
+        binding.countrycodeSpinner.registerCarrierNumberEditText(binding.mobileNoBox); // attaches the ccp spinner with the edittext
+
         binding.sendOtpBtn.setOnClickListener(v -> {
             String mobileString = binding.mobileNoBox.getText().toString().trim();
-            if(mobileString.isEmpty() || mobileString.length() < 10) {
+            if(mobileString.isEmpty() /*|| mobileString.length() < 10*/) {
                 binding.mobileNoBox.setError("Enter a valid mobile number");
                 binding.mobileNoBox.requestFocus();
                 return;
@@ -164,14 +174,16 @@ public class ProfileOTP_Login extends AppCompatActivity {
 */
     }
 
+
     /**This function is used to verify the mobile number
      * of the user entered.
      * @param mobile
      * @return void
      */
     private void phone_verification(String mobile) {
+        Log.v("mobile", "mobile: " + binding.countrycodeSpinner.getFullNumberWithPlus());
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                "+91" + mobile,
+                binding.countrycodeSpinner.getFullNumberWithPlus(),
                 60,
                 TimeUnit.SECONDS,
                 ProfileOTP_Login.this,
@@ -273,5 +285,9 @@ public class ProfileOTP_Login extends AppCompatActivity {
     public void dismissDialog() {
         dialog.dismiss();
     }
+
+
+
+
 
 }

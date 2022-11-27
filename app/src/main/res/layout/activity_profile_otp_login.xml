@@ -69,13 +69,33 @@
                 android:textSize="@null"
                 />
 
-            <EditText
-                android:id="@+id/mobileNoBox"
+            <LinearLayout
+                android:id="@+id/linear_mobile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/textbox_outline"
-                android:ems="10"
                 android:layout_below="@+id/we_will_sen"
+                android:layout_marginTop="20dp"
+                android:weightSum="3"
+                android:orientation="horizontal">
+
+                <com.hbb20.CountryCodePicker
+                    android:id="@+id/countrycode_spinner"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:gravity="center_vertical"
+                    app:ccp_countryPreference="in,us"
+                    app:ccp_autoFormatNumber="true"
+                    app:ccp_textSize="16sp"
+                    />
+
+            <EditText
+                android:id="@+id/mobileNoBox"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:background="@drawable/textbox_outline"
                 android:hint="Type your mobile number*"
                 android:textColor="@null"
                 android:textSize="@null"
@@ -83,11 +103,9 @@
                 android:textColorHint="@color/hint_color"
                 android:padding="14dp"
                 android:inputType="phone"
-                android:maxLength="10"
-                android:layout_marginTop="20dp"
-                android:layout_marginStart="34dp"
-                android:layout_marginEnd="34dp"
+                android:layout_marginEnd="10dp"
                 />
+            </LinearLayout>
 
             <com.mukesh.OtpView
                 android:id="@+id/otpBox"
@@ -100,7 +118,7 @@
                 android:itemBackground="@color/fade_color"
                 app:OtpLineColor="@color/purple_700"
                 android:focusableInTouchMode="true"
-                android:layout_below="@+id/mobileNoBox"
+                android:layout_below="@+id/linear_mobile"
                 app:OtpItemCount="6"
                 app:OtpViewType="line"
                 android:textColor="@color/purple_700"
