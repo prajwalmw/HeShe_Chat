@@ -120,13 +120,7 @@ public class ProfileOTP_Login extends AppCompatActivity {
 
         // loggin checking - end
 
-        // Ads initialize only once.
-        // TODO: Ads uncomment later and setup as well.
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
-        });
+
 
         // OTP Login support is added.
         mauth = FirebaseAuth.getInstance();

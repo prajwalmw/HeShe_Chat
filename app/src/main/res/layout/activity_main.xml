@@ -173,7 +173,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                tools:visibility="visible"
+                tools:visibility="gone"
                 android:layout_alignParentEnd="true"
                 android:src="@drawable/send_btn_svg"/>
 
@@ -206,13 +206,11 @@
     <com.google.android.gms.ads.AdView
         xmlns:ads="http://schemas.android.com/apk/res-auto"
         android:id="@+id/adView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="10dp"
         ads:adSize="BANNER"
+        android:background="@color/grey"
         ads:adUnitId="ca-app-pub-6656140211699925/6924438405">
     </com.google.android.gms.ads.AdView>
 

@@ -38,6 +38,9 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -107,17 +110,26 @@ public class MainActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
 
         // Admob - Start
-        adRequest = new AdRequest.Builder().build();
-        binding.adView.loadAd(adRequest);
-        binding.adView.setAdListener(new AdListener() {
+        final Handler handelay = new Handler();
+        handelay.postDelayed(new Runnable() {
             @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                super.onAdFailedToLoad(loadAdError);
-                binding.adView.loadAd(adRequest);
-            }
-        });
+            public void run() {
+                initAds();
 
-        loadFullScreenAd();
+                adRequest = new AdRequest.Builder().build();
+                binding.adView.loadAd(adRequest);
+                binding.adView.setAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        super.onAdFailedToLoad(loadAdError);
+                        binding.adView.loadAd(adRequest);
+                    }
+                });
+
+                loadFullScreenAd();
+            }
+        }, 5000);
+
         // Admob - End
 
         fetchAllUsers();
@@ -238,6 +250,17 @@ public class MainActivity extends AppCompatActivity {
             };
         });
 
+    }
+
+    // only once...
+    private void initAds() {
+        // Ads initialize only once.
+        // TODO: Ads uncomment later and setup as well.
+        MobileAds.initialize(MainActivity.this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
     }
 
     public void loadFullScreenAd() {
