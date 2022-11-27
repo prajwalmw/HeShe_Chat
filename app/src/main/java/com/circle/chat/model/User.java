@@ -8,11 +8,11 @@ public class User {
 
     }
 
-    public User(String uid, String name, String phoneNumber, String profileImage) {
+    public User(String uid, String name, String phoneNumber) {
         this.uid = uid;
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.profileImage = profileImage;
+      //  this.profileImage = profileImage;
     }
 
     public String getUid() {

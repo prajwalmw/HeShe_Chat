@@ -13,6 +13,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.circle.chat.R;
 import com.circle.chat.databinding.ActivityUserSetupScreenBinding;
 import com.circle.chat.model.CategoryModel;
@@ -65,6 +67,7 @@ public class UserSetupScreen extends AppCompatActivity {
     private List<CategoryModel> categoryList;
     private MaterialAlertDialogBuilder builder;
     private AlertDialog alertdialog;
+    private String imgpath = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +128,8 @@ public class UserSetupScreen extends AppCompatActivity {
                                         if (sessionManager.getLoggedInUsername().equalsIgnoreCase("")) // Adding username who logged-in into the session manager.
                                             sessionManager.setLoggedInUsername(name);
 
-                                        User user = new User(uid, name, phone, imageUrl);
+                                        User user = new User(uid, name, phone);
+                                        user.setProfileImage(imageUrl);
                                         sessionManager.setUserModel(user, "loggedIn_UserModel");
                                         database.getReference()
                                                 .child("users")
@@ -154,7 +158,9 @@ public class UserSetupScreen extends AppCompatActivity {
                     String phone = auth.getCurrentUser().getPhoneNumber();
 
                     String n = sessionManager.getLoggedInUsername();
-                    User user = new User(uid, name, phone, "No Image");
+                    User user = new User(uid, name, phone);
+                    if (!imgpath.equalsIgnoreCase(""))
+                        user.setProfileImage(imgpath);
                     sessionManager.setUserModel(user, "loggedIn_UserModel");
                     if (sessionManager.getLoggedInUsername().equalsIgnoreCase(""))
                         sessionManager.setLoggedInUsername(name);   // Adding username who logged-in into the session manager.
@@ -229,16 +235,35 @@ public class UserSetupScreen extends AppCompatActivity {
                             Toast.makeText(UserSetupScreen.this, "No previous details found. \nWelcome to HEShe Chat!", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        String name = user.getName();
-                        Uri uri = Uri.parse(user.getProfileImage());
+                        else {
+                            if (user.getName() != null)
+                                binding.nameBox.setText(user.getName());
+                            if (user.getProfileImage() != null) {
+                                    if (user.getImage() != null) {
+                                        imgpath = user.getImage();
+                                        // if (uri != null) {
+                                        Glide.with(UserSetupScreen.this)
+                                                .load(Uri.parse(user.getImage()))
+                                                .placeholder(R.drawable.avatar_icon)
+                                                .skipMemoryCache(false)
+                                                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                                                .into(binding.imageViewIcon);
+                                        //  }
+                                    }
+                                    else {
+                                        imgpath = user.getProfileImage();
+                                        Glide.with(UserSetupScreen.this)
+                                                .load(Uri.parse(user.getProfileImage()))
+                                                .placeholder(R.drawable.avatar_icon)
+                                                .skipMemoryCache(false)
+                                                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                                                .into(binding.imageViewIcon);
+                                    }
+                            }
 
-                        binding.nameBox.setText(name);
-                        if (user.getImage() == null) {
-                            Glide.with(UserSetupScreen.this)
-                                    .load(uri)
-                                    .placeholder(R.drawable.avatar_icon)
-                                    .into(binding.imageViewIcon);
+
                         }
+
                     }
 
                     @Override
@@ -255,6 +280,9 @@ public class UserSetupScreen extends AppCompatActivity {
         if(data != null) {
             if(data.getData() != null) {
                 Uri uri = data.getData(); // filepath
+                binding.imageViewIcon.setImageURI(data.getData());
+                selectedImage = data.getData();
+
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 long time = new Date().getTime();
                 StorageReference reference = storage.getReference().child("Profiles").child(time+"");
@@ -287,8 +315,7 @@ public class UserSetupScreen extends AppCompatActivity {
                 });
 
 
-                binding.imageViewIcon.setImageURI(data.getData());
-                selectedImage = data.getData();
+
             }
         }
     }
