@@ -210,8 +210,8 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("TAG", "The interstitial ad wasn't ready yet.");
                     }}
 
-                    deleteCurrentChatWithUser();
-                    fetchRandomUser();
+                    deleteCurrentChatWithUser(senderRoom, receiverRoom);
+                    fetchRandomUser(userArrayList);
                     binding.cvNewbtn.setCardBackgroundColor(getResources().getColor(R.color.purple_700));
                 }
 
@@ -302,30 +302,29 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void deleteCurrentChatWithUser() {
-        hand.removeCallbacksAndMessages(null);
+    private void deleteCurrentChatWithUser(String sRoom, String rRoom) {
+        if (hand != null)
+            hand.removeCallbacksAndMessages(null);
 
-        senderRoom = senderUid + receiverUid;
-        receiverRoom = receiverUid + senderUid;
+        if (sRoom != null) {
+            database.getReference()
+                    .child("chats")
+                    .child(sRoom)
+                    .removeValue();
+        }
 
-        database.getReference()
-                .child("chats")
-                .child(senderRoom)
-                .removeValue();
-
-        database.getReference()
-                .child("chats")
-                .child(receiverRoom)
-                .removeValue();
+        if (rRoom != null) {
+            database.getReference()
+                    .child("chats")
+                    .child(rRoom)
+                    .removeValue();
+        }
     }
 
-    private void fetchMessages() {
-        senderRoom = senderUid + receiverUid;
-        receiverRoom = receiverUid + senderUid;
-
+    private void fetchMessages(String sRoom, String rRoom) {
         database.getReference()
                 .child("chats")
-                .child(senderRoom)
+                .child(sRoom)
                 .child("messages")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
@@ -338,9 +337,9 @@ public class MainActivity extends AppCompatActivity {
                             messages.add(message);
                         }
 
-                        if (senderRoom.contains(FirebaseAuth.getInstance().getUid())) {
+                        if (sRoom.contains(FirebaseAuth.getInstance().getUid())) {
                             scrollToLatestItem(); // scroll recyclerview to latest item
-                            adapter = new MessagesAdapter(MainActivity.this, messages, senderRoom, receiverRoom, category_value);
+                            adapter = new MessagesAdapter(MainActivity.this, messages, sRoom, rRoom, category_value);
                             binding.recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                             binding.recyclerView.setAdapter(adapter);
                             binding.progress.setVisibility(View.GONE);
@@ -371,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
                                 userArrayList.add(randomUser);
                             }
                         }
-                        fetchRandomUser();
+                        fetchRandomUser(userArrayList);
                     }
 
                     @Override
@@ -382,39 +381,42 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void fetchRandomUser() {
+    private void fetchRandomUser(ArrayList<User> userList) {
 
-        if (userArrayList.size() > 0) {
+        if (userList.size() > 0) {
             binding.progress.setVisibility(View.VISIBLE);
             Random random = new Random();
            // int index = ThreadLocalRandom.current().nextInt(0, userArrayList.size());
-            int index = random.nextInt(userArrayList.size());
-            User user = userArrayList.get(index);
+            int index = random.nextInt(userList.size());
+            User user = userList.get(index);
             name = user.getName();
             profile = user.getProfileImage();
             token = user.getToken();
+
             receiverUid = user.getUid(); // this id will be of the one to whom you are sending the msg.
+            senderUid = FirebaseAuth.getInstance().getUid();
+
             block = user.isIsblocked();
 
-            // Receiver is sendig message 'Hi'
-            receiverSendingMessage();
+            senderRoom = senderUid + receiverUid;
+            receiverRoom = receiverUid + senderUid;
 
             binding.name.setText(name);
             Glide.with(MainActivity.this).load(profile)
                     .placeholder(R.drawable.avatar_icon)
                     .into(binding.profile);
-
-            fetchMessages();
             binding.newBtn.setText("New");
+
+            fetchMessages(senderRoom, receiverRoom);
+            // Receiver is sendig message 'Hi'
+            receiverSendingMessage(senderRoom, receiverRoom);
         }
     }
 
     /**
      * Receiver sending Hi message for a chat kickstarter...
      */
-    private void receiverSendingMessage() {
-        senderRoom = senderUid + receiverUid;
-        receiverRoom = receiverUid + senderUid;
+    private void receiverSendingMessage(String sRoom, String rRoom) {
 
         Date date = new Date();
         Runnable userStoppedTyping = new Runnable() {
@@ -449,15 +451,15 @@ public class MainActivity extends AppCompatActivity {
 
                 database.getReference()
                         .child("chats")
-                        .child(senderRoom).updateChildren(lastMsgObj); // Updating the values...
+                        .child(sRoom).updateChildren(lastMsgObj); // Updating the values...
 
                 database.getReference()
                         .child("chats")
-                        .child(receiverRoom).updateChildren(lastMsgObj);
+                        .child(rRoom).updateChildren(lastMsgObj);
 
                 database.getReference()
                         .child("chats")
-                        .child(senderRoom)
+                        .child(sRoom)
                         .child("messages")
                         .child(randomKey)
                         .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -465,7 +467,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onSuccess(Void aVoid) {
                                 database.getReference()
                                         .child("chats")
-                                        .child(receiverRoom)
+                                        .child(rRoom)
                                         .child("messages")
                                         .child(randomKey)
                                         .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -478,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
-                fetchMessages();
+              //  fetchMessages();
                 // end
             }
         };
@@ -624,23 +626,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
-        boolean notification = getIntent().getBooleanExtra("notification", false);
-      /*  if (notification) {
-            Intent intent = new Intent(this, Chat_UserList.class);
-            intent.putExtra("category",category_value);
-            intent.putExtra("notification",notification);
-            startActivity(intent);
-        }
-        else {
-            finish();
-        }*/
     }
 
     @Override
     protected void onDestroy() {
         // So that when app is forced closed so than also the current chat is deleted.
         super.onDestroy();
-        deleteCurrentChatWithUser();
+        deleteCurrentChatWithUser(senderRoom, receiverRoom);
     }
 }
