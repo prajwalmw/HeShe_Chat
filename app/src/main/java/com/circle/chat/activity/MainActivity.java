@@ -433,6 +433,32 @@ public class MainActivity extends AppCompatActivity {
             senderRoom = senderUid + receiverUid;
             receiverRoom = receiverUid + senderUid;
 
+
+            // typing....
+            database.getReference().child("presence").child(receiverUid)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                String status = snapshot.getValue(String.class);
+                                if (!status.isEmpty()) {
+                                    if (status.equals("Offline")) {
+                                     //   binding.status.setVisibility(View.GONE);
+                                    } else {
+                                        binding.onlinetxtview.setText(status);
+                                     //   binding.status.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+            // typinf end....
             binding.name.setText(name);
             Glide.with(MainActivity.this).load(profile)
                     .placeholder(R.drawable.avatar_icon)
