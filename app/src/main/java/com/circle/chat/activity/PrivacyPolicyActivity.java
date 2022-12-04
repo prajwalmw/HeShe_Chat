@@ -8,6 +8,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 
 import com.circle.chat.R;
 import com.circle.chat.databinding.ActivityPrivacyPolicyBinding;
@@ -31,6 +33,9 @@ public class PrivacyPolicyActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(getResources().getColor(R.color.purple_500));
         }
+
+        binding.privacyCheckbox.setMovementMethod(LinkMovementMethod.getInstance());  // When you need to show custom text rather than link to user.
+        binding.termsCheckbox.setMovementMethod(LinkMovementMethod.getInstance());  // When you need to show custom text rather than link to user.
 
         if (sessionManager.isAccepted()) {
             Intent intent = new Intent(this, ProfileOTP_Login.class);

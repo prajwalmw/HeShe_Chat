@@ -22,13 +22,13 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/icon"
         android:layout_centerHorizontal="true"
-        android:paddingHorizontal="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="100dp"
-        android:fontFamily="@font/bangers"
+        android:fontFamily="@font/alfa_slab_one"
+        android:paddingHorizontal="10dp"
         android:text="HeShe"
         android:textColor="@color/white"
-        android:textSize="34sp" />
+        android:textSize="38sp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -63,7 +63,7 @@
                 android:paddingStart="10dp"
                 android:selectAllOnFocus="true"
                 style="@style/Widget.App.CheckBox"
-                android:text="I agree and accept Privacy Policy" />
+                android:text="@string/i_agree_and_accept_privacy_policy" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -81,7 +81,7 @@
                 android:paddingStart="10dp"
                 android:selectAllOnFocus="true"
                 style="@style/Widget.App.CheckBox"
-                android:text="I agree and accept Terms of Use" />
+                android:text="@string/i_agree_and_accept_terms_of_use" />
         </RelativeLayout>
 
         <TextView
