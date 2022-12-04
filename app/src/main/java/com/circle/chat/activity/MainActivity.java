@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
     private InterstitialAd mInterstitialAd;
     private AdRequest adRequest;
     private int counter = 0;
+    String nameN = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -321,7 +322,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void fetchMessages(String sRoom, String rRoom) {
+    private void fetchMessages(String sRoom, String rRoom, String userName) {
+        // Fetching name of the current Receiver ie. Other User.
+        database.getReference()
+                .child("users")
+                .child(receiverUid)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User user = snapshot.getValue(User.class);
+                        nameN = user.getName();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+        // end
+
+        adapter = new MessagesAdapter(this, messages, sRoom, rRoom);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        binding.recyclerView.setAdapter(adapter);
+        scrollToLatestItem(); // scroll recyclerview to latest item
+
+
         database.getReference()
                 .child("chats")
                 .child(sRoom)
@@ -329,7 +354,9 @@ public class MainActivity extends AppCompatActivity {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        messages.clear();
+                        if (userName.equalsIgnoreCase(binding.name.getText().toString())) {
+                            // ie. If the user that is sending the messages if actually the same users with whom I am talking...
+                            messages.clear();
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                             Message message = snapshot1.getValue(Message.class);
                             message.setMessageId(snapshot1.getKey());
@@ -337,14 +364,19 @@ public class MainActivity extends AppCompatActivity {
                             messages.add(message);
                         }
 
-                        if (sRoom.contains(FirebaseAuth.getInstance().getUid())) {
                             scrollToLatestItem(); // scroll recyclerview to latest item
-                            adapter = new MessagesAdapter(MainActivity.this, messages, sRoom, rRoom/*, category_value*/);
-                            binding.recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                            binding.recyclerView.setAdapter(adapter);
                             binding.progress.setVisibility(View.GONE);
                             adapter.notifyDataSetChanged();
                         }
+
+//                        if (sRoom.contains(FirebaseAuth.getInstance().getUid())) {
+//                            scrollToLatestItem(); // scroll recyclerview to latest item
+//                            adapter = new MessagesAdapter(MainActivity.this, messages, sRoom, rRoom/*, category_value*/);
+//                            binding.recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+//                            binding.recyclerView.setAdapter(adapter);
+//                            binding.progress.setVisibility(View.GONE);
+//                            adapter.notifyDataSetChanged();
+//                        }
                     }
 
                     @Override
@@ -407,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
                     .into(binding.profile);
             binding.newBtn.setText("New");
 
-            fetchMessages(senderRoom, receiverRoom);
+            fetchMessages(senderRoom, receiverRoom, name);
             // Receiver is sendig message 'Hi'
             receiverSendingMessage(senderRoom, receiverRoom);
         }
