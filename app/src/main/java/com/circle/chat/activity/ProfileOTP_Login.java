@@ -63,8 +63,6 @@ public class ProfileOTP_Login extends AppCompatActivity {
         binding = ActivityProfileOtpLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
-
         intent = getIntent();
         if (intent.getExtras() != null) {
             Bundle args = intent.getBundleExtra("BUNDLE");

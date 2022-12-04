@@ -22,12 +22,23 @@ public class SessionManager {
     private static final String CATEGORY_SELECTED = "CATEGORY_SELECTED";
     private static final String USER_MODEL = "USER_MODEL";
     private static final String LOGGED_IN_USERNAME = "LOGGED_IN_USERNAME";
+    public static final String ACCEPTED = "ACCEPTED";
 
     public SessionManager(Context context) {
         this.context = context;
         pref = context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
     }
+
+    public boolean isAccepted() {
+        return pref.getBoolean(ACCEPTED, false);
+    }
+
+    public void setAccepted(Boolean accepted) {
+        editor.putBoolean(ACCEPTED, accepted);
+        editor.commit();
+    }
+
 
     public String getLoggedInUsername() {
         return pref.getString(LOGGED_IN_USERNAME, "");
