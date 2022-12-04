@@ -339,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
 
                         if (sRoom.contains(FirebaseAuth.getInstance().getUid())) {
                             scrollToLatestItem(); // scroll recyclerview to latest item
-                            adapter = new MessagesAdapter(MainActivity.this, messages, sRoom, rRoom, category_value);
+                            adapter = new MessagesAdapter(MainActivity.this, messages, sRoom, rRoom/*, category_value*/);
                             binding.recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                             binding.recyclerView.setAdapter(adapter);
                             binding.progress.setVisibility(View.GONE);

@@ -37,16 +37,16 @@ public class MessagesAdapter extends RecyclerView.Adapter {
     String senderRoom;
     String receiverRoom;
     FirebaseRemoteConfig remoteConfig;
-    String category_value;
+  //  String category_value;
 
     public MessagesAdapter(Context context, ArrayList<Message> messages,
-                           String senderRoom, String receiverRoom, String category_value) {
+                           String senderRoom, String receiverRoom/*, String category_value*/) {
         remoteConfig = FirebaseRemoteConfig.getInstance();
         this.context = context;
         this.messages = messages;
         this.senderRoom = senderRoom;
         this.receiverRoom = receiverRoom;
-        this.category_value = category_value;
+      //  this.category_value = category_value;
     }
 
     @NonNull
