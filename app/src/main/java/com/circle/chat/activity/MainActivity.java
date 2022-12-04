@@ -433,6 +433,9 @@ public class MainActivity extends AppCompatActivity {
             senderRoom = senderUid + receiverUid;
             receiverRoom = receiverUid + senderUid;
 
+            // Adding this Delete so that other user sending message to new when I am not available/talking with
+            // other user should not be shown ie. in that case be deleted.
+            deleteCurrentChatWithUser(senderRoom, receiverRoom);
 
             // typing....
             database.getReference().child("presence").child(receiverUid)
