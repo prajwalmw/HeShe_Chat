@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
     private InterstitialAd mInterstitialAd;
     private AdRequest adRequest;
     private int counter = 0;
+    String nameN = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,8 +211,42 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("TAG", "The interstitial ad wasn't ready yet.");
                     }}
 
-                    deleteCurrentChatWithUser(senderRoom, receiverRoom);
-                    fetchRandomUser(userArrayList);
+                  //  deleteCurrentChatWithUser(senderRoom, receiverRoom);
+                 //   fetchRandomUser(userArrayList);
+
+                    // new random user - start
+                    if (userArrayList.size() > 0) {
+                        binding.progress.setVisibility(View.VISIBLE);
+                        Random random = new Random();
+                        // int index = ThreadLocalRandom.current().nextInt(0, userArrayList.size());
+                        int index = random.nextInt(userArrayList.size());
+                        User user = userArrayList.get(index);
+                        name = user.getName();
+                        profile = user.getProfileImage();
+                        token = user.getToken();
+
+                        receiverUid = user.getUid(); // this id will be of the one to whom you are sending the msg.
+                        senderUid = FirebaseAuth.getInstance().getUid();
+
+                        block = user.isIsblocked();
+
+                        senderRoom = senderUid + receiverUid;
+                        receiverRoom = receiverUid + senderUid;
+
+                        binding.progress.setVisibility(View.GONE);
+
+                        binding.name.setText(name);
+                        Glide.with(MainActivity.this).load(profile)
+                                .placeholder(R.drawable.avatar_icon)
+                                .into(binding.profile);
+                        binding.newBtn.setText("New");
+
+                        fetchMessages(senderRoom, receiverRoom, name);
+                        // Receiver is sendig message 'Hi'
+                        //   receiverSendingMessage(senderRoom, receiverRoom);
+                    }
+                    // new random user - end
+
                     binding.cvNewbtn.setCardBackgroundColor(getResources().getColor(R.color.purple_700));
                 }
 
@@ -321,7 +356,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void fetchMessages(String sRoom, String rRoom) {
+    private void fetchMessages(String sRoom, String rRoom, String screenname) {
+        database.getReference()
+                .child("users")
+                .child(receiverUid)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User user = snapshot.getValue(User.class);
+                        nameN = user.getName();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+        adapter = new MessagesAdapter(this, messages, sRoom, rRoom);
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        binding.recyclerView.setAdapter(adapter);
+        scrollToLatestItem(); // scroll recyclerview to latest item
+
         database.getReference()
                 .child("chats")
                 .child(sRoom)
@@ -337,14 +393,22 @@ public class MainActivity extends AppCompatActivity {
                             messages.add(message);
                         }
 
-                        if (sRoom.contains(FirebaseAuth.getInstance().getUid())) {
+                        Toast.makeText(MainActivity.this, nameN + "\n" + "screen: " + screenname + "\n sender: " + sRoom + "\n receiver: " + rRoom, Toast.LENGTH_SHORT).show();
+
+                        if (screenname.equalsIgnoreCase(binding.name.getText().toString())) {
                             scrollToLatestItem(); // scroll recyclerview to latest item
-                            adapter = new MessagesAdapter(MainActivity.this, messages, sRoom, rRoom/*, category_value*/);
-                            binding.recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                            binding.recyclerView.setAdapter(adapter);
                             binding.progress.setVisibility(View.GONE);
                             adapter.notifyDataSetChanged();
                         }
+
+//                        if (sRoom.contains(FirebaseAuth.getInstance().getUid())) {
+//                            scrollToLatestItem(); // scroll recyclerview to latest item
+//                            adapter = new MessagesAdapter(MainActivity.this, messages, sRoom, rRoom/*, category_value*/);
+//                            binding.recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+//                            binding.recyclerView.setAdapter(adapter);
+//                            binding.progress.setVisibility(View.GONE);
+//                            adapter.notifyDataSetChanged();
+//                        }
                     }
 
                     @Override
@@ -370,7 +434,38 @@ public class MainActivity extends AppCompatActivity {
                                 userArrayList.add(randomUser);
                             }
                         }
-                        fetchRandomUser(userArrayList);
+                      //  fetchRandomUser(userArrayList);
+
+                        // new random user - start
+                        if (userArrayList.size() > 0) {
+                            binding.progress.setVisibility(View.VISIBLE);
+                            Random random = new Random();
+                            // int index = ThreadLocalRandom.current().nextInt(0, userArrayList.size());
+                            int index = random.nextInt(userArrayList.size());
+                            User user = userArrayList.get(index);
+                            name = user.getName();
+                            profile = user.getProfileImage();
+                            token = user.getToken();
+
+                            receiverUid = user.getUid(); // this id will be of the one to whom you are sending the msg.
+                            senderUid = FirebaseAuth.getInstance().getUid();
+
+                            block = user.isIsblocked();
+
+                            senderRoom = senderUid + receiverUid;
+                            receiverRoom = receiverUid + senderUid;
+
+                            binding.name.setText(name);
+                            Glide.with(MainActivity.this).load(profile)
+                                    .placeholder(R.drawable.avatar_icon)
+                                    .into(binding.profile);
+                            binding.newBtn.setText("New");
+
+                            fetchMessages(senderRoom, receiverRoom, "fetchAllusers");
+                            // Receiver is sendig message 'Hi'
+                         //   receiverSendingMessage(senderRoom, receiverRoom);
+                        }
+                        // new random user - end
                     }
 
                     @Override
@@ -407,9 +502,9 @@ public class MainActivity extends AppCompatActivity {
                     .into(binding.profile);
             binding.newBtn.setText("New");
 
-            fetchMessages(senderRoom, receiverRoom);
+            fetchMessages(senderRoom, receiverRoom, "fetchrandomUser");
             // Receiver is sendig message 'Hi'
-            receiverSendingMessage(senderRoom, receiverRoom);
+         //   receiverSendingMessage(senderRoom, receiverRoom);
         }
     }
 
