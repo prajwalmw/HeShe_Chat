@@ -40,6 +40,7 @@ public class PrivacyPolicyActivity extends AppCompatActivity {
         if (sessionManager.isAccepted()) {
             Intent intent = new Intent(this, ProfileOTP_Login.class);
             startActivity(intent);
+            finish();
         }
 
         binding.startBtn.setOnClickListener(v -> {
@@ -47,6 +48,7 @@ public class PrivacyPolicyActivity extends AppCompatActivity {
                 sessionManager.setAccepted(true);
                 Intent intent = new Intent(PrivacyPolicyActivity.this, ProfileOTP_Login.class);
                 startActivity(intent);
+                finish();
             }
             else {
                 binding.startBtn.setBackground(getResources().getDrawable(R.drawable.disabled_button));

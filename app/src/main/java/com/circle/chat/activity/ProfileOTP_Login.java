@@ -89,7 +89,6 @@ public class ProfileOTP_Login extends AppCompatActivity {
             if (i.getExtras() == null) { // ie. user is already logged in and just opening up the app.
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.putExtra("app_open", "app_open");
-
                 startActivity(intent);
                 finish();
             }
@@ -250,6 +249,7 @@ public class ProfileOTP_Login extends AppCompatActivity {
                             // get id here and send that to main activity.
                             Intent intent = new Intent(ProfileOTP_Login.this, UserSetupScreen.class);
                             startActivity(intent);
+                            finish();
                         }
                         else if (task.isCanceled()){
                             // here in onsuccess -> dismiss the Dialog box.
