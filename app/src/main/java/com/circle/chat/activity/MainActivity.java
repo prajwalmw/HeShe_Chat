@@ -256,7 +256,6 @@ public class MainActivity extends AppCompatActivity {
     // only once...
     private void initAds() {
         // Ads initialize only once.
-        // TODO: Ads uncomment later and setup as well.
         MobileAds.initialize(MainActivity.this, new OnInitializationCompleteListener() {
             @Override
             public void onInitializationComplete(InitializationStatus initializationStatus) {
@@ -266,7 +265,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadFullScreenAd() {
         // Fullscreen ads.
-        // TODO: update with production key later.
         InterstitialAd.load(this, "ca-app-pub-6656140211699925/3974841438", adRequest,
                 new InterstitialAdLoadCallback() {
                     @Override
@@ -534,8 +532,6 @@ public class MainActivity extends AppCompatActivity {
                                         .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
-                                                // TODO: Handle later.
-                                                //   sendNotification(name, message.getMessage(), token, profile); // this calls fcm by hitting fcm api.
                                             }
                                         });
                             }
@@ -565,7 +561,7 @@ public class MainActivity extends AppCompatActivity {
             InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         } catch (Exception e) {
-            // TODO: handle exception
+
         }
 
         String messageTxt = binding.messageBox.getText().toString();
@@ -610,8 +606,7 @@ public class MainActivity extends AppCompatActivity {
                                 .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        // TODO: Handle later.
-                                        //   sendNotification(name, message.getMessage(), token, profile); // this calls fcm by hitting fcm api.
+
                                     }
                                 });
                     }
