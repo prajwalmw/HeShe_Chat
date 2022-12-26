@@ -26,6 +26,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.circle.chat.R;
 import com.circle.chat.adapter.MessagesAdapter;
@@ -51,6 +57,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -76,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     ProgressDialog dialog;
     String senderUid;
     String receiverUid;
-    String token;
+    String receivertoken;
     String profile;
     String name;
     URL serverURL;
@@ -109,6 +116,12 @@ public class MainActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
+
+        profile = getIntent().getStringExtra("image");
+        receivertoken = getIntent().getStringExtra("token");
+        receiverUid = getIntent().getStringExtra("uid"); // this id will be of the one to whom you are sending the msg.
+
+        senderGeneratingToken(); // generating token for notifin.
 
         // Admob - Start
         final Handler handelay = new Handler();
@@ -211,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("TAG", "The interstitial ad wasn't ready yet.");
                     }}
 
-                    deleteCurrentChatWithUser(senderRoom, receiverRoom);
+                 //   deleteCurrentChatWithUser(senderRoom, receiverRoom);
                     fetchRandomUser(userArrayList);
                     binding.cvNewbtn.setCardBackgroundColor(getResources().getColor(R.color.purple_700));
                 }
@@ -421,10 +434,12 @@ public class MainActivity extends AppCompatActivity {
             User user = userList.get(index);
             name = user.getName();
             profile = user.getProfileImage();
-            token = user.getToken();
+          //  token = user.getToken();  // TODO: check later...
 
             receiverUid = user.getUid(); // this id will be of the one to whom you are sending the msg.
             senderUid = FirebaseAuth.getInstance().getUid();
+
+            receiverGeneratingToken(receiverUid);
 
             block = user.isIsblocked();
 
@@ -433,7 +448,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Adding this Delete so that other user sending message to new when I am not available/talking with
             // other user should not be shown ie. in that case be deleted.
-            deleteCurrentChatWithUser(senderRoom, receiverRoom);
+        //    deleteCurrentChatWithUser(senderRoom, receiverRoom);
 
             // typing....
             database.getReference().child("presence").child(receiverUid)
@@ -606,11 +621,71 @@ public class MainActivity extends AppCompatActivity {
                                 .setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-
+                                        sendNotification(name, message.getMessage(), receivertoken, profile); // this calls fcm by hitting fcm api.
                                     }
                                 });
                     }
                 });
+    }
+
+    void sendNotification(String name, String message, String receivertoken, String profile) {
+        try {
+            RequestQueue queue = Volley.newRequestQueue(this);
+            String url = "https://fcm.googleapis.com/fcm/send";
+
+            JSONObject data = new JSONObject(); // here the one who is sending the msg his details must come here.
+            data.put("name", sender_user.getName()); // user-name
+            data.put("body", message); // message
+            data.put("token", sender_user.getToken());  // here comes sender's token...
+            data.put("image", sender_user.getProfileImage());
+            data.put("uid", sender_user.getUid());
+        //    data.put("category", category_value);
+            data.put("activity", "ChatActivity");
+
+            JSONObject notificationData = new JSONObject();
+            notificationData.put("data", data); // sending value to "data" is very imp to trigger notifi in both fore and background.
+            notificationData.put("to", receivertoken);  // here comes receiver's token...
+
+            JsonObjectRequest request = new JsonObjectRequest(url, notificationData
+                    , new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                     //  Toast.makeText(MainActivity.this, "success", Toast.LENGTH_SHORT).show();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.v("volley", "error: " + error + ". : " + error.networkResponse);
+                    if(error.getMessage() != null) {
+                        Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(MainActivity.this, "Error in Volley", Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    /** ..... IMPORTANT .....
+                     * Firebase - setting- project settings - cloud messaging - cm api (legacy)
+                     * - three dots - redirect - enable - done - copy and paste here the key.
+                     */
+                    HashMap<String, String> map = new HashMap<>();
+                    String key = "Key=AAAAPSQ4b6E:APA91bHF8Rxt24vHjsd7bY9ns47YmH2X4Qeju_EYbrJoscrHqkVXxXTYDNsJarXMIA4xv6duv8mI3JEQzt6TvBhLkbqNGz-tu3VXVOIuhhb_adDYTxZQwIc3HzISeOHELVXwoEC52ToT";
+                    map.put("Content-Type", "application/json");
+                    map.put("Authorization", key);
+
+                    return map;
+                }
+            };
+
+            queue.add(request);
+        }
+        catch (Exception ex) {
+            Log.v("hi", "hii: " + ex);
+        }
+
     }
 
     @Override
@@ -688,6 +763,45 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         // So that when app is forced closed so than also the current chat is deleted.
         super.onDestroy();
-        deleteCurrentChatWithUser(senderRoom, receiverRoom);
+      //  deleteCurrentChatWithUser(senderRoom, receiverRoom);
     }
+
+    private void senderGeneratingToken() {
+        /**
+         * GEnerating token and than need to upate token else notific wont show up as it requires token.
+         */
+        FirebaseMessaging.getInstance()
+                .getToken()
+                .addOnSuccessListener(new OnSuccessListener<String>() {
+                    @Override
+                    public void onSuccess(String senderToken) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("token", senderToken);
+                        database.getReference()
+                                .child("users")
+                                .child(FirebaseAuth.getInstance().getUid())
+                                .updateChildren(map);
+                    }
+                });
+    }
+
+    private void receiverGeneratingToken(String receiverUid) {
+        // Reading token of receiver...
+        database.getReference()
+                .child("users")
+                .child(receiverUid)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        User user = snapshot.getValue(User.class);
+                        receivertoken = user.getToken();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
 }
