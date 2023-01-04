@@ -178,13 +178,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (block)
+      /*  if (block)
             binding.blockBtn.setText("Unblock");
         else
             binding.blockBtn.setText("Block");
 
         binding.blockBtn.setOnClickListener(v -> {
             blockUser();
+        });*/
+
+        binding.chatListBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, Chat_UserList.class);
+            startActivity(intent);
         });
 
 

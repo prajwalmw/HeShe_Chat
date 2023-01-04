@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".activity.Chat_UserList">
+
+    <RelativeLayout
+        android:id="@+id/category_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="21dp"
+        android:layout_marginBottom="24dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        >
+
+        <ImageButton
+            android:id="@+id/arrow_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrow_right"
+            android:background="@null"/>
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@+id/arrow_back"
+            android:fontFamily="@font/lato_bold"
+            android:gravity="center"
+            android:lineSpacingExtra="1sp"
+            android:text="Chats"
+            android:textAppearance="@style/toolbar_title"
+            android:textColor="@null"
+            android:textSize="@null"
+            android:translationY="-0.28sp" />
+
+        <ImageButton
+            android:id="@+id/refreshbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:layout_marginEnd="10dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/refresh_icon_svg" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/backgroundImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        />
+
+    <TextView
+        android:id="@+id/no_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No user available in this group"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_marginTop="12dp"
+        android:paddingTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/search_view"
+        android:textAppearance="@style/we_will_sen"
+        android:textColor="@null"
+        android:textSize="@null"
+        android:gravity="center" />
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_view"
+        android:layout_below="@+id/category_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@drawable/search_bar"
+        app:queryHint="search users"
+        app:iconifiedByDefault="false"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="10dp"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:itemCount="10"
+        android:layout_marginHorizontal="10dp"
+        android:layout_below="@+id/search_view"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/row_conversation" />
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="#B6B6B6"
+        android:visibility="gone"
+        />
+
+
+</RelativeLayout>

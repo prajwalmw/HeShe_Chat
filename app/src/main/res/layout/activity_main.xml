@@ -82,15 +82,14 @@
             tools:visibility="visible"
             android:visibility="visible" />
 
-        <TextView
-            android:id="@+id/blockBtn"
+        <ImageButton
+            android:id="@+id/chatListBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:src="@drawable/list_icon"
             android:background="@null"
             android:layout_centerVertical="true"
-            android:text="Block"
-            android:visibility="gone"
             android:padding="5dp"
             android:textColor="@color/red"
             android:fontFamily="@font/lato_bold"/>
