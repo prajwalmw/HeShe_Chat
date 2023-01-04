@@ -82,7 +82,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHol
         holder.binding.username.setText(user.getName());
 
         Glide.with(context).load(user.getProfileImage())
-                .placeholder(R.drawable.avatar)
+                .placeholder(R.drawable.avatar_icon)
                 .into(holder.binding.profile);
 
 
@@ -95,6 +95,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHol
                 intent.putExtra("uid", user.getUid());
                 intent.putExtra("token", user.getToken());
                 intent.putExtra("block", user.isIsblocked());
+                intent.putExtra("notification", true);
                 context.startActivity(intent);
             }
         });

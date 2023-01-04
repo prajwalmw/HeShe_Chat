@@ -26,6 +26,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 public class Chat_UserList extends AppCompatActivity {
@@ -93,10 +95,54 @@ public class Chat_UserList extends AppCompatActivity {
         });
         // search view - end
 
+        database.getReference()
+                        .child("chats")
+                                .addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        users.clear();
+                                        HashMap<String, Object> map = (HashMap<String, Object>) snapshot.getValue();
+                                        List<String> list = new ArrayList<String>(map.keySet());
+                                        for (String key: list) {
+                                            String[] array = key.split(FirebaseAuth.getInstance().getUid());
+                                            if (!array[0].equalsIgnoreCase("")) {
+                                                database.getReference()
+                                                        .child("users")
+                                                        .child(array[0])
+                                                        .addValueEventListener(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                User user = snapshot.getValue(User.class);
+                                                                users.add(user);
+                                                                if (users.size() <= 0)
+                                                                    binding.noData.setVisibility(View.VISIBLE);
+                                                                else
+                                                                    binding.noData.setVisibility(View.GONE);
+
+                                                                usersAdapter.notifyDataSetChanged();
+                                                                return;
+                                                            }
+
+                                                            @Override
+                                                            public void onCancelled(@NonNull DatabaseError error) {
+
+                                                            }
+                                                        });
+                                        }
+
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
         /**
          * Reading all the users that exists...and here itself checking if the user is blocked by
          * someone than that someone shouldnt show up here...
          */
+/*
         database.getReference()
                 .child("users")
                 .addValueEventListener(new ValueEventListener() {
@@ -204,6 +250,7 @@ public class Chat_UserList extends AppCompatActivity {
 
                     }
                 });
+*/
     }
 
     private void searchOperation(String newText) {
@@ -254,7 +301,8 @@ public class Chat_UserList extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
 }

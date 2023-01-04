@@ -97,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
     private AdRequest adRequest;
     private int counter = 0;
     String nameN = "";
+    private Intent intent;
+    boolean fromNotification = false;
+    private String n_name, n_profile, n_uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,7 +149,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Admob - End
 
-        fetchAllUsers();
+        intent = getIntent();
+        if (intent.getExtras() != null) {
+            fromNotification = intent.getBooleanExtra("notification", false);
+            n_name = intent.getStringExtra("name");
+            n_profile = intent.getStringExtra("image");
+            n_uid = intent.getStringExtra("uid");
+            Log.v("Chat", "fromNotification: " + fromNotification);
+        }
+
         binding.progress.setVisibility(View.VISIBLE);
 
         dialog = new ProgressDialog(this);
@@ -177,6 +188,16 @@ public class MainActivity extends AppCompatActivity {
 //                finish();
             }
         });
+
+        if (!fromNotification)
+            fetchAllUsers();
+        else {
+            User user = new User();
+            user.setName(n_name);
+            user.setProfileImage(n_profile);
+            user.setUid(n_uid);
+            fetchNotifiUser(user);
+        }
 
       /*  if (block)
             binding.blockBtn.setText("Unblock");
@@ -283,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadFullScreenAd() {
         // Fullscreen ads.
-        InterstitialAd.load(this, "ca-app-pub-6656140211699925/3974841438", adRequest,
+        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest,
                 new InterstitialAdLoadCallback() {
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
@@ -429,6 +450,62 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void fetchNotifiUser(User user) {
+            binding.progress.setVisibility(View.VISIBLE);
+            name = user.getName();
+            profile = user.getProfileImage();
+            //  token = user.getToken();  // TODO: check later...
+
+            receiverUid = user.getUid(); // this id will be of the one to whom you are sending the msg.
+            senderUid = FirebaseAuth.getInstance().getUid();
+
+            receiverGeneratingToken(receiverUid);
+
+            block = user.isIsblocked();
+
+            senderRoom = senderUid + receiverUid;
+            receiverRoom = receiverUid + senderUid;
+
+            // Adding this Delete so that other user sending message to new when I am not available/talking with
+            // other user should not be shown ie. in that case be deleted.
+            //    deleteCurrentChatWithUser(senderRoom, receiverRoom);
+
+            // typing....
+            database.getReference().child("presence").child(receiverUid)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                String online = snapshot.getValue(String.class);
+                                if (!online.isEmpty()) {
+                                    if (online.equals("Offline")) {
+                                        //   binding.status.setVisibility(View.GONE);
+                                    } else {
+                                        binding.onlinetxtview.setText(online);
+                                        //   binding.status.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+            // typinf end....
+            binding.name.setText(name);
+            Glide.with(MainActivity.this).load(profile)
+                    .placeholder(R.drawable.avatar_icon)
+                    .into(binding.profile);
+            binding.newBtn.setText("New");
+
+            fetchMessages(senderRoom, receiverRoom, name);
+            // Receiver is sendig message 'Hi'
+        //    receiverSendingMessage(senderRoom, receiverRoom);
+    }
+
     private void fetchRandomUser(ArrayList<User> userList) {
 
         if (userList.size() > 0) {
@@ -461,12 +538,12 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
-                                String status = snapshot.getValue(String.class);
-                                if (!status.isEmpty()) {
-                                    if (status.equals("Offline")) {
+                                String online = snapshot.getValue(String.class);
+                                if (!online.isEmpty()) {
+                                    if (online.equals("Offline")) {
                                      //   binding.status.setVisibility(View.GONE);
                                     } else {
-                                        binding.onlinetxtview.setText(status);
+                                        binding.onlinetxtview.setText(online);
                                      //   binding.status.setVisibility(View.VISIBLE);
                                     }
                                 }
@@ -488,7 +565,7 @@ public class MainActivity extends AppCompatActivity {
 
             fetchMessages(senderRoom, receiverRoom, name);
             // Receiver is sendig message 'Hi'
-            receiverSendingMessage(senderRoom, receiverRoom);
+          //  receiverSendingMessage(senderRoom, receiverRoom);
         }
     }
 
@@ -762,6 +839,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        if (fromNotification) {
+            Intent intent = new Intent(this, Chat_UserList.class);
+            startActivity(intent);
+        }
     }
 
     @Override
