@@ -1,5 +1,7 @@
 package com.circle.chat.activity;
 
+import static com.circle.chat.AppConstants.clearDbAfter24Hrs;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -20,14 +22,18 @@ import com.circle.chat.adapter.UsersAdapter;
 import com.circle.chat.databinding.ActivityChatUserListBinding;
 import com.circle.chat.model.User;
 
+import com.google.android.gms.ads.AdRequest;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 public class Chat_UserList extends AppCompatActivity {
@@ -39,6 +45,7 @@ public class Chat_UserList extends AppCompatActivity {
     public static final String TAG = Chat_UserList.class.getSimpleName();
     private Intent intent;
     private User user;
+    private AdRequest adRequest;
 
 
     @Override
@@ -52,6 +59,11 @@ public class Chat_UserList extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(Color.WHITE);
         }
+
+        //ads - start
+        adRequest = new AdRequest.Builder().build();
+        binding.adView.loadAd(adRequest);
+        //ads - end
 
         intent = getIntent();
         if (intent.getExtras() != null) {
@@ -80,6 +92,11 @@ public class Chat_UserList extends AppCompatActivity {
         else
             binding.noData.setVisibility(View.GONE);
 
+        // clear lsit after 24 hrs - start
+      //  clearDbAfter24Hrs(database);
+        usersAdapter.notifyDataSetChanged();
+        // clear lsit after 24 hrs - end
+
         // search view - start
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -102,8 +119,9 @@ public class Chat_UserList extends AppCompatActivity {
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         users.clear();
                                         HashMap<String, Object> map = (HashMap<String, Object>) snapshot.getValue();
+                                        if (map != null) {
                                         List<String> list = new ArrayList<String>(map.keySet());
-                                        for (String key: list) {
+                                        for (String key : list) {
                                             String[] array = key.split(FirebaseAuth.getInstance().getUid());
                                             if (!array[0].equalsIgnoreCase("")) {
                                                 database.getReference()
@@ -128,9 +146,10 @@ public class Chat_UserList extends AppCompatActivity {
 
                                                             }
                                                         });
-                                        }
+                                            }
 
                                         }
+                                    }
                                     }
 
                                     @Override
