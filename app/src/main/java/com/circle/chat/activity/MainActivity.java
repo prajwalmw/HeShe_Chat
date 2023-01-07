@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.animation.Animator;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
@@ -23,11 +24,14 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -233,6 +237,8 @@ public class MainActivity extends AppCompatActivity {
         binding.messageBox.setEnabled(true);
         binding.messageBox.setHint("Type a message...");
 
+        binding.startMsgImg.setRepeatCount(0);
+
         binding.cvNewbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -244,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (binding.newBtn.getText().toString().equalsIgnoreCase("Really?")) {
                     counter++;  // incrementing counter here...
+                    binding.startMsgImg.resumeAnimation();
                     if (counter == 10) {
                         counter = 0;    // resetting counter...
                     if (mInterstitialAd != null) {

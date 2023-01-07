@@ -27,7 +27,8 @@
         app:lottie_cacheComposition="true"
         app:lottie_url="https://assets6.lottiefiles.com/packages/lf20_yeyxce62.json"
         app:lottie_autoPlay="true"
-        app:lottie_loop="true"/>
+        app:lottie_loop="false"
+        />
 
     <ProgressBar
         android:id="@+id/progress"
