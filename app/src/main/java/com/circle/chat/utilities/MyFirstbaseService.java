@@ -42,13 +42,14 @@ public class MyFirstbaseService extends FirebaseMessagingService {
     Bitmap bitmap = null;
     public String NOTIFICATION_CHANNEL_ID = "1";
     public String NOTIFICATION_CHANNEL_NAME = "Chat Notification";
+    private SessionManager sessionManager;
 
 
     @Override
     public void onMessageReceived(@NonNull @NotNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-//        RemoteMessage.Notification notification = remoteMessage.getNotification();
+        sessionManager = new SessionManager(getApplicationContext());
         Map<String, String> data = remoteMessage.getData();
         String title = data.get("name");
         String body = data.get("body");
@@ -57,7 +58,10 @@ public class MyFirstbaseService extends FirebaseMessagingService {
         String uid = data.get("uid");
      //   String category = data.get("category");
         String activity = data.get("activity");
-        sendNotification(title, body, token, image, uid, activity);
+
+        // So that if user is chatting on with same user than dont show notification.
+        if (!sessionManager.getCurrentChattingUser().equalsIgnoreCase(title))
+            sendNotification(title, body, token, image, uid, activity);
         Log.v("fcm", "fcm_value: Title: "+ title + "\n, " +
                 "Message: " + body + "\n, Toke: " + token + "\n, Image: " + image);
 

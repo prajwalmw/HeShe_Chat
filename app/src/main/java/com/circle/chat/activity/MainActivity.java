@@ -198,11 +198,7 @@ public class MainActivity extends AppCompatActivity {
         if (!fromNotification)
             fetchAllUsers();
         else {
-            User user = new User();
-            user.setName(n_name);
-            user.setProfileImage(n_profile);
-            user.setUid(n_uid);
-            fetchNotifiUser(user);
+            fetchAllUsers_fromNotification();
         }
 
       /*  if (block)
@@ -439,13 +435,44 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
-                            User randomUser = snapshot1.getValue(User.class);
-                            String randomID = randomUser.getUid();
-                            if (!randomID.equalsIgnoreCase(currentID)) {
-                                userArrayList.add(randomUser);
+                            User user = snapshot1.getValue(User.class);
+                            String userID = user.getUid();
+                            if (!userID.equalsIgnoreCase(currentID)) {
+                                userArrayList.add(user);
                             }
                         }
                         fetchRandomUser(userArrayList);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+    }
+    private void fetchAllUsers_fromNotification() {
+        String currentID = FirebaseAuth.getInstance().getUid();
+
+        database.getReference()
+                .child("users")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                            User user = snapshot1.getValue(User.class);
+                            String userID = user.getUid();
+                            if (!userID.equalsIgnoreCase(currentID)) {
+                                userArrayList.add(user);
+                            }
+                        }
+                      //  fetchRandomUser(userArrayList);
+                        User user = new User();
+                        user.setName(n_name);
+                        user.setProfileImage(n_profile);
+                        user.setUid(n_uid);
+                        sessionManager.setCurrentChattingUser(n_name); // setting user name of new user...
+                        fetchNotifiUser(user);
                     }
 
                     @Override
@@ -533,6 +560,8 @@ public class MainActivity extends AppCompatActivity {
 
             senderRoom = senderUid + receiverUid;
             receiverRoom = receiverUid + senderUid;
+
+            sessionManager.setCurrentChattingUser(name); // setting user name of new user...
 
             // Adding this Delete so that other user sending message to new when I am not available/talking with
             // other user should not be shown ie. in that case be deleted.
@@ -781,6 +810,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         String currentId = FirebaseAuth.getInstance().getUid();
         database.getReference().child("presence").child(currentId).setValue("Online");
+        sessionManager.setInForeground(true);
+        sessionManager.setCurrentChattingUser(binding.name.getText().toString());
     }
 
     @Override
@@ -788,6 +819,8 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         String currentId = FirebaseAuth.getInstance().getUid();
         database.getReference().child("presence").child(currentId).setValue("Offline");
+        sessionManager.setInForeground(false);
+        sessionManager.setCurrentChattingUser(binding.name.getText().toString());
     }
 
     private void blockUser() {
@@ -915,5 +948,8 @@ public class MainActivity extends AppCompatActivity {
                     AlarmManager.INTERVAL_DAY, pendingIntent);
         }
     }
+
+
+
 
 }

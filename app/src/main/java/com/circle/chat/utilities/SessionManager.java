@@ -23,6 +23,8 @@ public class SessionManager {
     private static final String USER_MODEL = "USER_MODEL";
     private static final String LOGGED_IN_USERNAME = "LOGGED_IN_USERNAME";
     public static final String ACCEPTED = "ACCEPTED";
+    public static final String IN_FOREGROUND = "IN_FOREGROUND";
+    public static final String CURRENT_CHATTING_USER = "CURRENT_CHATTING_USER";
 
     public SessionManager(Context context) {
         this.context = context;
@@ -39,6 +41,22 @@ public class SessionManager {
         editor.commit();
     }
 
+    public boolean isIn_Foreground() {
+        return pref.getBoolean(IN_FOREGROUND, false);
+    }
+    public String getCurrentChattingUser() {
+        return pref.getString(CURRENT_CHATTING_USER, "");
+    }
+
+    public void setCurrentChattingUser(String user) {
+        editor.putString(CURRENT_CHATTING_USER, user);
+        editor.commit();
+    }
+
+    public void setInForeground(Boolean isInForeground) {
+        editor.putBoolean(IN_FOREGROUND, isInForeground);
+        editor.commit();
+    }
 
     public String getLoggedInUsername() {
         return pref.getString(LOGGED_IN_USERNAME, "");
