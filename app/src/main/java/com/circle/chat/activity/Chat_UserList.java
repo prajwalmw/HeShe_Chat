@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.circle.chat.adapter.UsersAdapter;
 import com.circle.chat.databinding.ActivityChatUserListBinding;
+import com.circle.chat.model.Message;
 import com.circle.chat.model.User;
 
 import com.google.android.gms.ads.AdRequest;
@@ -123,33 +124,57 @@ public class Chat_UserList extends AppCompatActivity {
                                         if (map != null) {
                                         List<String> list = new ArrayList<String>(map.keySet());
                                         for (String key : list) {
-                                            if (key.contains(currentId)) {
                                             String[] array = key.split(currentId);
+                                            if (!array[0].equalsIgnoreCase(key)) {
                                             if (!array[0].equalsIgnoreCase("")) {
+
                                                 database.getReference()
-                                                        .child("users")
-                                                        .child(array[0])
+                                                        .child("chats")
+                                                        .child(key)
+                                                        .child("messages")
                                                         .addValueEventListener(new ValueEventListener() {
                                                             @Override
                                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                User user = snapshot.getValue(User.class);
-                                                                users.add(user);
-                                                                if (users.size() <= 0)
-                                                                    binding.noData.setVisibility(View.VISIBLE);
-                                                                else
-                                                                    binding.noData.setVisibility(View.GONE);
+                                                                String senderId = "";
+                                                                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
+                                                                    Message message = snapshot1.getValue(Message.class);
+                                                                        senderId = message.getSenderId();
+                                                                }
 
-                                                                usersAdapter.notifyDataSetChanged();
-                                                                return;
+                                                                if (!senderId.equalsIgnoreCase("") && !senderId.equalsIgnoreCase(FirebaseAuth.getInstance().getUid())) {
+                                                                    database.getReference()
+                                                                            .child("users")
+                                                                            .child(senderId)
+                                                                            .addValueEventListener(new ValueEventListener() {
+                                                                                @Override
+                                                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                                    User user = snapshot.getValue(User.class);
+                                                                                    users.add(user);
+                                                                                    if (users.size() <= 0)
+                                                                                        binding.noData.setVisibility(View.VISIBLE);
+                                                                                    else
+                                                                                        binding.noData.setVisibility(View.GONE);
+
+                                                                                    usersAdapter.notifyDataSetChanged();
+                                                                                    return;
+                                                                                }
+
+                                                                                @Override
+                                                                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                                                                }
+                                                                            });
+                                                            }
+
                                                             }
 
                                                             @Override
                                                             public void onCancelled(@NonNull DatabaseError error) {
-
+                                                                Log.e("error", "error: " + error);
                                                             }
                                                         });
                                             }
-                                        }
+                                            }
                                         }
                                     }
                                     }
