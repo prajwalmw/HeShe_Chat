@@ -952,7 +952,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(getApplicationContext(), MyBroadcastReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         if (alarmManager != null) {

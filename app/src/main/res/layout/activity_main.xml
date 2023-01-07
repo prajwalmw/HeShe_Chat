@@ -19,15 +19,15 @@
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/start_msg_img"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:visibility="gone"
         tools:visibility="visible"
         app:lottie_cacheComposition="true"
-        app:lottie_url="https://assets6.lottiefiles.com/packages/lf20_yeyxce62.json"
+        app:lottie_url="https://assets9.lottiefiles.com/packages/lf20_zwwwgco2.json"
         app:lottie_autoPlay="true"
-        app:lottie_loop="false"
+        app:lottie_loop="true"
         />
 
     <ProgressBar
