@@ -112,6 +112,7 @@ public class Chat_UserList extends AppCompatActivity {
         });
         // search view - end
 
+        Log.v("currentId", "currentId: " + currentId);
         database.getReference()
                         .child("chats")
                                 .addValueEventListener(new ValueEventListener() {
@@ -122,7 +123,8 @@ public class Chat_UserList extends AppCompatActivity {
                                         if (map != null) {
                                         List<String> list = new ArrayList<String>(map.keySet());
                                         for (String key : list) {
-                                            String[] array = key.split(FirebaseAuth.getInstance().getUid());
+                                            if (key.contains(currentId)) {
+                                            String[] array = key.split(currentId);
                                             if (!array[0].equalsIgnoreCase("")) {
                                                 database.getReference()
                                                         .child("users")
@@ -147,7 +149,7 @@ public class Chat_UserList extends AppCompatActivity {
                                                             }
                                                         });
                                             }
-
+                                        }
                                         }
                                     }
                                     }

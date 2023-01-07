@@ -87,6 +87,8 @@
             </intent-filter>
         </service>
 
+        <receiver android:name=".utilities.MyBroadcastReceiver" />
+
     </application>
 
 </manifest>

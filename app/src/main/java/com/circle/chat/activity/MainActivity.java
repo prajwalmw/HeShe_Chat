@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -38,6 +40,7 @@ import com.circle.chat.adapter.MessagesAdapter;
 import com.circle.chat.databinding.ActivityMainBinding;
 import com.circle.chat.model.Message;
 import com.circle.chat.model.User;
+import com.circle.chat.utilities.MyBroadcastReceiver;
 import com.circle.chat.utilities.SessionManager;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
@@ -125,6 +128,9 @@ public class MainActivity extends AppCompatActivity {
         receiverUid = getIntent().getStringExtra("uid"); // this id will be of the one to whom you are sending the msg.
 
         senderGeneratingToken(); // generating token for notifin.
+
+        // Setting up Alarm Manager
+        myAlarm();
 
         // Admob - Start
         final Handler handelay = new Handler();
@@ -888,6 +894,26 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    public void myAlarm() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 12); // Afternoon 12:00 PM
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
+        if (calendar.getTime().compareTo(new Date()) < 0)
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+        Intent intent = new Intent(getApplicationContext(), MyBroadcastReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                    AlarmManager.INTERVAL_DAY, pendingIntent);
+        }
     }
 
 }
