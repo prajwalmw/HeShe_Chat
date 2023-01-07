@@ -36,7 +36,7 @@
             android:fontFamily="@font/lato_bold"
             android:gravity="center"
             android:lineSpacingExtra="1sp"
-            android:text="Chats"
+            android:text="New Messages"
             android:textAppearance="@style/toolbar_title"
             android:textColor="@null"
             android:textSize="@null"
