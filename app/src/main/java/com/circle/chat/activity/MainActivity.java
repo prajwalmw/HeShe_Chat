@@ -385,7 +385,6 @@ public class MainActivity extends AppCompatActivity {
         binding.recyclerView.setAdapter(adapter);
         scrollToLatestItem(); // scroll recyclerview to latest item
 
-
         database.getReference()
                 .child("chats")
                 .child(sRoom)
@@ -406,6 +405,12 @@ public class MainActivity extends AppCompatActivity {
                             scrollToLatestItem(); // scroll recyclerview to latest item
                             binding.progress.setVisibility(View.GONE);
                             adapter.notifyDataSetChanged();
+
+                            if (messages.size() == 0) {
+                                binding.startMsgImg.setVisibility(View.VISIBLE);
+                            }
+                            else
+                                binding.startMsgImg.setVisibility(View.GONE);
                         }
 
 //                        if (sRoom.contains(FirebaseAuth.getInstance().getUid())) {

@@ -7,15 +7,37 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
+    <ImageView
+        android:id="@+id/start_msg_imgq"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.8"
+        android:visibility="gone"
+        tools:visibility="gone"
+        android:layout_centerInParent="true"
+        android:src="@drawable/start_msg_svg" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/start_msg_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:lottie_cacheComposition="true"
+        app:lottie_url="https://assets6.lottiefiles.com/packages/lf20_yeyxce62.json"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"/>
+
     <ProgressBar
         android:id="@+id/progress"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_centerInParent="true"
-        android:indeterminate="true"
+        android:background="@drawable/circle_white_bg"
         android:elevation="10dp"
-        android:padding="5dp"
-        android:background="@drawable/circle_white_bg" />
+        android:indeterminate="true"
+        android:padding="5dp" />
 
 
     <RelativeLayout
@@ -237,6 +259,5 @@
         tools:itemCount="20"
         tools:listitem="@layout/item_sent_1"
         />
-
 
 </RelativeLayout>
