@@ -110,10 +110,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:src="@drawable/comment"
-            android:background="@null"
             android:layout_centerInParent="true"
-            android:padding="5dp" />
+            android:background="@null"
+            android:padding="10dp"
+            android:src="@drawable/comment" />
     </RelativeLayout>
 
     <View
