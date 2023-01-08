@@ -265,7 +265,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:visibility="visible"
         android:layout_marginHorizontal="10dp"
         android:layout_below="@+id/note_txt"

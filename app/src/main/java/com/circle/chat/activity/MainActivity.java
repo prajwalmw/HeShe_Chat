@@ -392,6 +392,13 @@ public class MainActivity extends AppCompatActivity {
         binding.recyclerView.setAdapter(adapter);
         scrollToLatestItem(); // scroll recyclerview to latest item
 
+
+        binding.recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
+                binding.recyclerView.scrollToPosition(messages.size() - 1); // scroll recyclerview to latest item
+            }
+        });
         database.getReference()
                 .child("chats")
                 .child(sRoom)
@@ -912,6 +919,8 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, Chat_UserList.class);
             startActivity(intent);
         }
+        else
+            moveTaskToBack(true);
     }
 
     @Override
