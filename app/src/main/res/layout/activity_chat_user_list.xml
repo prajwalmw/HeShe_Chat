@@ -65,7 +65,7 @@
         android:id="@+id/no_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No user available in this group"
+        android:text="No new messages"
         android:visibility="gone"
         tools:visibility="visible"
         android:layout_marginTop="12dp"

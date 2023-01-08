@@ -526,7 +526,15 @@ public class MainActivity extends AppCompatActivity {
                                     if (online.equals("Offline")) {
                                         //   binding.status.setVisibility(View.GONE);
                                     } else {
-                                        binding.onlinetxtview.setText(online);
+                                        if (online.equalsIgnoreCase("typing...")) {
+                                            binding.typingAnim.setVisibility(View.VISIBLE);
+                                            binding.onlinetxtview.setVisibility(View.GONE);
+                                        }
+                                        else {
+                                            binding.typingAnim.setVisibility(View.GONE);
+                                            binding.onlinetxtview.setVisibility(View.VISIBLE);
+                                            binding.onlinetxtview.setText(online);
+                                        }
                                         //   binding.status.setVisibility(View.VISIBLE);
                                     }
                                 }
@@ -590,8 +598,17 @@ public class MainActivity extends AppCompatActivity {
                                     if (online.equals("Offline")) {
                                      //   binding.status.setVisibility(View.GONE);
                                     } else {
-                                        binding.onlinetxtview.setText(online);
-                                     //   binding.status.setVisibility(View.VISIBLE);
+                                        if (online.equalsIgnoreCase("typing...")) {
+                                            binding.typingAnim.setVisibility(View.VISIBLE);
+                                            binding.onlinetxtview.setVisibility(View.GONE);
+                                        }
+                                        else {
+                                            binding.typingAnim.setVisibility(View.GONE);
+                                            binding.onlinetxtview.setVisibility(View.VISIBLE);
+                                            binding.onlinetxtview.setText(online);
+                                        }
+
+                                        //   binding.status.setVisibility(View.VISIBLE);
                                     }
                                 }
                             }
@@ -692,7 +709,8 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 //Do something after 100ms
                 database.getReference().child("presence").child(senderUid).setValue("typing...");
-                binding.onlinetxtview.setText("Typing...");
+             //   binding.onlinetxtview.setText("Typing...");
+                binding.typingAnim.setVisibility(View.VISIBLE);
                 hand.removeCallbacksAndMessages(null);
                 hand.postDelayed(userStoppedTyping, 4000);
             }
