@@ -39,6 +39,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.circle.chat.R;
 import com.circle.chat.adapter.MessagesAdapter;
 import com.circle.chat.databinding.ActivityMainBinding;
@@ -313,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadFullScreenAd() {
         // Fullscreen ads.
-        InterstitialAd.load(this, "ca-app-pub-3940256099942544/1033173712", adRequest,
+        InterstitialAd.load(this, "ca-app-pub-6656140211699925/3974841438", adRequest,
                 new InterstitialAdLoadCallback() {
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
@@ -556,8 +557,12 @@ public class MainActivity extends AppCompatActivity {
 
             // typinf end....
             binding.name.setText(name);
-            Glide.with(MainActivity.this).load(profile)
+            Glide.with(MainActivity.this)
+                    .load(profile)
                     .placeholder(R.drawable.avatar_icon)
+                    .skipMemoryCache(false)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .thumbnail(0.05f)
                     .into(binding.profile);
             binding.newBtn.setText("New");
 
@@ -629,8 +634,12 @@ public class MainActivity extends AppCompatActivity {
 
             // typinf end....
             binding.name.setText(name);
-            Glide.with(MainActivity.this).load(profile)
+            Glide.with(MainActivity.this)
+                    .load(profile)
                     .placeholder(R.drawable.avatar_icon)
+                    .skipMemoryCache(false)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .thumbnail(0.05f)
                     .into(binding.profile);
             binding.newBtn.setText("New");
 

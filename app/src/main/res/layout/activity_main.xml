@@ -245,7 +245,7 @@
         android:layout_alignParentBottom="true"
         ads:adSize="BANNER"
         android:background="@color/grey"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
+        ads:adUnitId="ca-app-pub-6656140211699925/6924438405">
     </com.google.android.gms.ads.AdView>
 
     <TextView

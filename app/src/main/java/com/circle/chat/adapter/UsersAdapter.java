@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.circle.chat.R;
 import com.circle.chat.activity.MainActivity;
 import com.circle.chat.databinding.RowConversationBinding;
@@ -81,8 +82,12 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UsersViewHol
 
         holder.binding.username.setText(user.getName());
 
-        Glide.with(context).load(user.getProfileImage())
+        Glide.with(context)
+                .load(user.getProfileImage())
                 .placeholder(R.drawable.avatar_icon)
+                .skipMemoryCache(false)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .thumbnail(0.05f)
                 .into(holder.binding.profile);
 
 
