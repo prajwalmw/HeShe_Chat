@@ -2,6 +2,7 @@ package com.circle.chat.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -23,11 +24,15 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,6 +65,8 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -69,6 +76,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -108,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
     private Intent intent;
     boolean fromNotification = false;
     private String n_name, n_profile, n_uid;
+    private MaterialAlertDialogBuilder builder;
+    private AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,6 +228,25 @@ public class MainActivity extends AppCompatActivity {
         binding.chatListBtn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Chat_UserList.class);
             startActivity(intent);
+        });
+
+        binding.reportBtn.setOnClickListener(v -> {
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("senderuuid", senderUid);
+            data.put("receiveruuid", receiverUid);
+            data.put("toolbar_name", binding.name.getText().toString());
+            data.put("messages", new Gson().toJson(messages));
+
+            database.getReference()
+                    .child("report")
+                    .child(receiverRoom)
+                    .setValue(data)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    showDialog();
+                                }
+                            });
         });
 
 
@@ -997,6 +1026,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void showDialog() {
+        builder = new MaterialAlertDialogBuilder(this);
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View customLayout = inflater.inflate(R.layout.report_dialog, null);
+        MaterialButton button = customLayout.findViewById(R.id.okBtn);
+        builder.setView(customLayout)
+//                .setPositiveButton("Ok", /* listener = */ null)
+//                .setNegativeButton("Cancel", /* listener = */ null)
+                .setCancelable(false);
+
+        alertDialog = builder.create();
+        button.setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
+
+        alertDialog.getWindow().setBackgroundDrawableResource(R.drawable.rounded_corner_bg); // show rounded corner for the dialog
+        alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);   // dim backgroun
+        int width = getResources().getDimensionPixelSize(R.dimen.internet_dialog_width);    // set width to your alertDialog.
+
+        alertDialog.getWindow().setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT);
+        alertDialog.show();
+    }
 
 
 

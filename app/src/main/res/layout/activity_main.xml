@@ -87,6 +87,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:text="HeShe"
+            android:layout_toStartOf="@+id/reportBtn"
             android:textAppearance="@style/toolbar_title"
             android:textColor="@null"
             android:textSize="@null"
@@ -118,6 +119,18 @@
             android:textColor="@color/purple_700"
             tools:visibility="visible"
             android:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/reportBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="5dp"
+            android:layout_toStartOf="@+id/chatListBtn"
+            android:background="@null"
+            android:padding="5dp"
+            android:contentDescription="Report"
+            android:src="@drawable/report" />
 
         <ImageButton
             android:id="@+id/chatListBtn"
