@@ -8,14 +8,14 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     namespace 'com.circle.chat'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.circle.chat"
         minSdk 21
-        targetSdk 32
-        versionCode 6
-        versionName "1.0.5"
+        targetSdk 33
+        versionCode 7
+        versionName "1.0.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

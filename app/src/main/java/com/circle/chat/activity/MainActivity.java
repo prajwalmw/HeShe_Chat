@@ -513,8 +513,10 @@ public class MainActivity extends AppCompatActivity {
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                             User user = snapshot1.getValue(User.class);
                             String userID = user.getUid();
-                            if (!userID.equalsIgnoreCase(currentID)) {
-                                userArrayList.add(user);
+                            if (userID != null) {
+                                if (!userID.equalsIgnoreCase(currentID)) {
+                                    userArrayList.add(user);
+                                }
                             }
                         }
                       //  fetchRandomUser(userArrayList);
