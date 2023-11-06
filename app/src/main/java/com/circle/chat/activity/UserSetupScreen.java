@@ -203,10 +203,12 @@ public class UserSetupScreen extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                             User user = snapshot1.getValue(User.class);
-                            if (user.getName().equalsIgnoreCase(name)) {
-                                generateRandomName();
-                            } else {
-                                binding.nameBox.setText(name);  // setting random username
+                            if (user != null) {
+                                if (user.getName() != null && user.getName().equalsIgnoreCase(name)) {
+                                    generateRandomName();
+                                } else {
+                                    binding.nameBox.setText(name);  // setting random username
+                                }
                             }
                         }
                     }
