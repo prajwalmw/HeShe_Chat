@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "262600683425",
+    "firebase_url": "https://heshe-chat-default-rtdb.firebaseio.com",
     "project_id": "heshe-chat",
     "storage_bucket": "heshe-chat.appspot.com"
   },
@@ -14,11 +15,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "262600683425-eh8ukfged81d1tag1chm3e9qd94vge02.apps.googleusercontent.com",
+          "client_id": "262600683425-2gb5838jd7d3dltddgjp8otnkesga7lq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.circle.chat",
             "certificate_hash": "07ba49fef9681f9890b0ff7b37d43c8c4d01bc9d"
+          }
+        },
+        {
+          "client_id": "262600683425-h2akqv53vdj0mvuvbiqd7r7pg8rtl0c2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.circle.chat",
+            "certificate_hash": "f614087017c8ab7c67bcbfa2325f147c378ade0b"
           }
         },
         {
@@ -40,7 +49,8 @@
             }
           ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-6656140211699925~1566840953"
     }
   ],
   "configuration_version": "1"
